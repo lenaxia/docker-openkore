@@ -1,39 +1,55 @@
-FROM alpine:3.7
+# Build stage
+FROM ubuntu:24.04 as build
 
-LABEL title="openkore" \
-  maintainer="Carlos Milán Figueredo" \
-  version="1.1" \
-  url1="https://calnus.com" \
-  url2="http://www.hispamsx.org" \
-  bbs="telnet://bbs.hispamsx.org" \
-  twitter="@cmilanf" \
-  thanksto1="Beatriz Sebastián Peña" \
-  thanksto2="Alberto Marcos González"
+# Install build-time dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    build-essential \
+    libperl-dev \
+    perl-modules \
+    zlib1g-dev \
+    libreadline-dev \
+    libncurses-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-LABEL OK_IP="IP address of the Ragnarok Online server" \
-  OK_USERNAME="Account username" \
-  OK_PWD="Account password" \
-  OK_CHAR="Character slot. Default: 1" \
-  OK_USERNAMEMAXSUFFIX="Maximum number of suffixes to generate with the username." \
-  OK_FOLLOW_USERNAME1="Name of the username to follow with 20% probability" \
-  OK_FOLLOW_USERNAME2="Name of a second username to follow with 20% probability" \
-  OK_KILLSTEAL="It is ok that the bot attacks monster that are already being attacked by other players." \
-  MYSQL_HOST="Hostname of the MySQL database. Ex: calnus-beta.mysql.database.azure.com." \
-  MYSQL_DB="Name of the MySQL database." \
-  MYSQL_USER="Database username for authentication." \
-  MYSQL_PWD="Password for authenticating with database. WARNING: it will be visible from Azure Portal."
+# Install CA certificates
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /opt/openkore \
-  && apk update \
-  && apk add --no-cache git build-base g++ perl perl-dev perl-time-hires perl-compress-raw-zlib readline readline-dev ncurses-libs ncurses-terminfo-base ncurses-dev python2 curl curl-dev nano dos2unix mysql-client bind-tools \
-  && git clone https://github.com/openkore/openkore.git /opt/openkore \
-  && ln -s /usr/lib/libncurses.so /usr/lib/libtermcap.so \
-  && ln -s /usr/lib/libncurses.a /usr/lib/libtermcap.a \
-  && cd /opt/openkore/ \
-  && make \
-  && mv /opt/openkore/tables/servers.txt /opt/openkore/tables/servers.txt.bak \
-  && mkdir /opt/openkore/control/class/
+# Clone the OpenKore repository and get the version
+ARG OPENKORE_VERSION=master
+RUN git clone --depth 1 --branch ${OPENKORE_VERSION} https://github.com/openkore/openkore.git /opt/openkore
+WORKDIR /opt/openkore
+RUN OPENKORE_VERSION=$(git describe --tags --always) && echo "OPENKORE_VERSION=$OPENKORE_VERSION" >> $GITHUB_ENV
 
+# Build OpenKore
+RUN make
+
+# Runtime stage
+FROM ubuntu:24.04
+
+# Create a non-root user
+RUN useradd -ms /bin/bash openkore
+
+# Install runtime dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    perl \
+    perl-modules \
+    zlib1g \
+    libreadline8 \
+    libncurses6 \
+    curl \
+    nano \
+    dos2unix \
+    default-mysql-client \
+    dnsutils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy built artifacts from the build stage
+COPY --from=build /opt/openkore /opt/openkore
+
+# Copy configuration files
 COPY recvpackets.txt /opt/openkore/tables/
 COPY servers.txt /opt/openkore/tables/
 COPY docker-entrypoint.sh /usr/local/bin/
@@ -47,7 +63,30 @@ COPY config/sage.txt /opt/openkore/control/class/sage.txt
 COPY config/swordman.txt /opt/openkore/control/class/swordman.txt
 COPY config/wizard.txt /opt/openkore/control/class/wizard.txt
 
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+# Set environment variables for configuration
+ENV OK_IP="" \
+    OK_USERNAME="" \
+    OK_PWD="" \
+    OK_CHAR="1" \
+    OK_USERNAMEMAXSUFFIX="" \
+    OK_FOLLOW_USERNAME1="" \
+    OK_FOLLOW_USERNAME2="" \
+    OK_KILLSTEAL="0" \
+    MYSQL_HOST="" \
+    MYSQL_DB="" \
+    MYSQL_USER="" \
+    MYSQL_PWD=""
 
+# Set the working directory
 WORKDIR /opt/openkore
+
+# Add a health check
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+    CMD perl -e 'exit 0'
+
+# Set the entrypoint and command
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["/opt/openkore/openkore.pl"]
+
+# Switch to the non-root user
+USER openkore
