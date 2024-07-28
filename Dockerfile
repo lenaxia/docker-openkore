@@ -1,49 +1,25 @@
 # Build stage
-FROM ubuntu:24.04 as build
+FROM alpine:3.17 as build
 
 # Install build-time dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    git \
-    build-essential \
-    libperl-dev \
-    libtime-perl \
-    zlib1g-dev \
-    libreadline-dev \
-    libncurses-dev \
-    python2 \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache git build-base g++ perl-dev perl-time-hires perl-compress-raw-zlib readline-dev ncurses-dev python2 curl-dev
 
-# Clone the OpenKore repository and get the version
+# Clone the OpenKore repository
 ARG OPENKORE_VERSION=master
 RUN git clone --depth 1 --branch ${OPENKORE_VERSION} https://github.com/openkore/openkore.git /opt/openkore
-WORKDIR /opt/openkore
-RUN OPENKORE_VERSION=$(git describe --tags --always) && echo "OPENKORE_VERSION=$OPENKORE_VERSION" >> $GITHUB_ENV
 
 # Build OpenKore
+WORKDIR /opt/openkore
 RUN make
 
 # Runtime stage
-FROM ubuntu:24.04
+FROM alpine:3.17
 
 # Create a non-root user
-RUN useradd -ms /bin/bash openkore
+RUN addgroup -S openkore && adduser -S openkore -G openkore
 
 # Install runtime dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    perl \
-    libtime-perl \
-    zlib1g \
-    libreadline8 \
-    libncurses6 \
-    python2 \
-    curl \
-    nano \
-    dos2unix \
-    default-mysql-client \
-    dnsutils \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache perl perl-time-hires perl-compress-raw-zlib readline ncurses-libs ncurses-terminfo-base python2 curl nano dos2unix mysql-client bind-tools
 
 # Copy built artifacts from the build stage
 COPY --from=build /opt/openkore /opt/openkore
