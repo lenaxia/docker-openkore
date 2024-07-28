@@ -16,11 +16,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install CA certificates
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
 
-# Clone the OpenKore repository and get the version
+# Clone the OpenKore repository
 ARG OPENKORE_VERSION=master
 RUN git clone --depth 1 --branch ${OPENKORE_VERSION} https://github.com/openkore/openkore.git /opt/openkore
 WORKDIR /opt/openkore
-RUN OPENKORE_VERSION=$(git describe --tags --always) && echo "OPENKORE_VERSION=$OPENKORE_VERSION" >> $GITHUB_ENV
 
 # Build OpenKore
 RUN make
