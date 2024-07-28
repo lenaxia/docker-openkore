@@ -30,7 +30,8 @@ FROM ubuntu:24.04
 RUN useradd -ms /bin/bash openkore
 
 # Install runtime dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     perl \
     libtime-perl \
     zlib1g \
@@ -41,7 +42,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     nano \
     dos2unix \
     default-mysql-client \
-    bind9-devel \
+    dnsutils \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy built artifacts from the build stage
