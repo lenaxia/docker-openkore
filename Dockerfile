@@ -48,6 +48,9 @@ RUN apt-get update && \
 # Copy built artifacts from the build stage
 COPY --from=build /opt/openkore /opt/openkore
 
+# Change ownership of /opt/openkore to the openkore user
+RUN chown -R openkore:openkore /opt/openkore
+
 # Copy configuration files
 COPY recvpackets.txt /opt/openkore/tables/
 COPY servers.txt /opt/openkore/tables/

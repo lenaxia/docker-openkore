@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  openkore:
+    image: ghcr.io/lenaxia/docker-openkore:20240728
+    environment:
+      - OK_IP=192.168.5.201
+      - OK_USERNAME=Lenaxia
+      - OK_PWD=faith6510
+      - OK_CHAR=0
+      #- OK_USERNAMEMAXSUFFIX=5
+      - OK_KILLSTEAL=1
+      #- OK_FOLLOW_USERNAME1=followme1
+      #- OK_FOLLOW_USERNAME2=followme2
+      #- MYSQL_HOST=mysql.example.com
+      #- MYSQL_DB=ragnarok
+      #- MYSQL_USER=dbuser
+      #- MYSQL_PWD=dbpassword
