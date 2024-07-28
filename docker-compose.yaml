@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   openkore:
     image: ghcr.io/lenaxia/docker-openkore:20240728
