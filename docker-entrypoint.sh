@@ -37,7 +37,7 @@ if [ -z "${OK_USERNAME}" ]; then echo "Missing OK_USERNAME environment variable.
 if [ -z "${OK_PWD}" ]; then echo "Missing OK_PWD environment variable. Unable to continue."; exit 1; fi
 if [ -z "${OK_CHAR}" ]; then OK_CHAR=1; fi
 
-if [ "${OK_KILLSTEAL}" == "1" ]; then 
+if [ "${OK_KILLSTEAL}" = "1" ]; then 
     sed -i "1507s|return 0|return 1|" /opt/openkore/src/Misc.pm
     sed -i "1534s|return 0|return 1|" /opt/openkore/src/Misc.pm
     sed -i "1571s|return !objectIsMovingTowardsPlayer(\$monster);|return 1;|" /opt/openkore/src/Misc.pm
