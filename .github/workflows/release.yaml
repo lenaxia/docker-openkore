@@ -23,7 +23,7 @@ jobs:
         images: |
           ghcr.io/${{ github.repository }}
         tags: |
-          type=semver,pattern={{version}}
+          type=semver,pattern=${{ env.OPENKORE_VERSION }}
           type=sha
 
     - name: Set up QEMU
