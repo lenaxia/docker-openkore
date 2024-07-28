@@ -43,6 +43,7 @@ RUN apt-get update && \
     dos2unix \
     default-mysql-client \
     dnsutils \
+    make \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy built artifacts from the build stage
