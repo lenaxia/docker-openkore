@@ -1,17 +1,18 @@
 #########################
 # Private rAthena Servers
 
-[rAthena]
-ip 172.17.0.3
+[localHost - rA/Herc]
+ip 192.168.5.201
 port 6900
-version 55
-master_version 16
-serverType kRO_RagexeRE_2015_10_29a
-serverEncoding Korean
-charBlockSize 147
-addTableFolders kRO/RagexeRE_2015_10_29a;pserver;translated;translated/kRO_english;kRO
-recvpackets recvpackets.txt
-
-# following options are optional
+master_version 1
+version 28
+serverType kRO_RagexeRE_2020_04_01b
+serverEncoding Western
+gameGuard 0
+storageEncryptKey 0x050B6F79, 0x0202C179, 0x0E20120, 0x04FA43E3, 0x0179B6C8, 0x05973DF2, 0x07D8D6B, 0x08CB9ED9
+addTableFolders kRO/RagexeRE_2020_04_01b;iRO/official;iRO
+charBlockSize 155
+pinCode 0
+charDeleteDateType 1
+rankingSystemType 1
 private 1
-pincode 0
