@@ -44,6 +44,9 @@ RUN apt-get update && \
     default-mysql-client \
     dnsutils \
     make \
+    python3 \
+    build-essential \ 
+    libncurses-dev \ 
     && rm -rf /var/lib/apt/lists/*
 
 # Copy built artifacts from the build stage
