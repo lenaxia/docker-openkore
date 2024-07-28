@@ -132,6 +132,6 @@ sed -i "s|^lockMap_y$|lockMap_y 185|g" /opt/openkore/control/config.txt
 sed -i "s|^lockMap_randX$|lockMap_randX 115|g" /opt/openkore/control/config.txt
 sed -i "s|^lockMap_randY$|lockMap_randY 20|g" /opt/openkore/control/config.txt
 
-sed -i "s|^ip 172.17.0.3$|ip ${OK_IP}|g" /opt/openkore/tables/servers.txt
+sed -i "s|^ip [0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+$|ip ${OK_IP}|g" /opt/openkore/tables/servers.txt
 
 exec "$@"
