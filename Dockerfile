@@ -36,8 +36,9 @@ RUN apt-get update && \
     perl \
     perl-modules \
     zlib1g \
-    libreadline8 \
+    libreadline-dev \
     libncurses6 \
+    libcurl4-openssl-dev \
     curl \
     nano \
     dos2unix \
@@ -82,6 +83,9 @@ ENV OK_IP="" \
     MYSQL_DB="" \
     MYSQL_USER="" \
     MYSQL_PWD=""
+
+# Create a symlink for python to point to python3
+RUN ln -s /usr/bin/python3 /usr/bin/python
 
 # Set the working directory
 WORKDIR /opt/openkore
