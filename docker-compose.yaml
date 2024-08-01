@@ -1,6 +1,6 @@
 services:
   openkore:
-    image: ghcr.io/lenaxia/docker-openkore:20240728
+    image: ghcr.io/lenaxia/docker-openkore:20240801
     environment:
       - OK_IP=192.168.5.201
       - OK_USERNAME=Lenaxia

@@ -115,7 +115,7 @@ else
     done
 fi
 sed -i "s|^master$|master rAthena|g" /opt/openkore/control/config.txt
-sed -i "s|^server$|server 0|g" /opt/openkore/control/config.txt
+sed -i "s|^server\s*\(.*\)$|server 0|g" /opt/openkore/control/config.txt
 sed -i "s|^password$|password ${OK_PWD}|g" /opt/openkore/control/config.txt
 sed -i "s|^char$|char ${OK_CHAR}|g" /opt/openkore/control/config.txt
 sed -i "s|^autoResponse 0$|autoResponse 1|g" /opt/openkore/control/config.txt
