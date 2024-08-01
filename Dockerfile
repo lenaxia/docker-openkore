@@ -72,9 +72,10 @@ COPY config/wizard.txt /opt/openkore/control/class/wizard.txt
 
 # Set environment variables for configuration
 ENV OK_IP="" \
+    OK_SERVER="" \
     OK_USERNAME="" \
     OK_PWD="" \
-    OK_CHAR="1" \
+    OK_CHAR="0" \
     OK_USERNAMEMAXSUFFIX="" \
     OK_FOLLOW_USERNAME1="" \
     OK_FOLLOW_USERNAME2="" \
@@ -83,6 +84,9 @@ ENV OK_IP="" \
     MYSQL_DB="" \
     MYSQL_USER="" \
     MYSQL_PWD=""
+
+# Set TERM env var to suppress an openkore error in docker
+ENV TERM=xterm
 
 # Create a symlink for python to point to python3
 RUN ln -s /usr/bin/python3 /usr/bin/python

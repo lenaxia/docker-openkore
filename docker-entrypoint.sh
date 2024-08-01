@@ -114,7 +114,7 @@ else
         fi
     done
 fi
-sed -i "s|^master$|master localHost - rA/Herc|g" /opt/openkore/control/config.txt
+sed -i "s|^master$|master ${OK_SERVER}|g" /opt/openkore/control/config.txt
 sed -i "s|^server\s*\(.*\)$|server 0|g" /opt/openkore/control/config.txt
 sed -i "s|^password$|password ${OK_PWD}|g" /opt/openkore/control/config.txt
 sed -i "s|^char$|char ${OK_CHAR}|g" /opt/openkore/control/config.txt
