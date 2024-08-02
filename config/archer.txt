@@ -236,13 +236,13 @@ sitAuto_look
 sitAuto_look_from_wall
 sitTensionRelax 0
 
-statsAddAuto 0
-statsAddAuto_list
-statsAddAuto_dontUseBonus 0
+statsAddAuto 1
+statsAddAuto_list 60 dex, 40 agi, 12 int, 10 vit, 99 dex, 60 agi, 30 vit
+statsAddAuto_dontUseBonus 1
 statsAdd_over_99 1
 
-skillsAddAuto 0
-skillsAddAuto_list
+skillsAddAuto 1
+skillsAddAuto_list NV_BASIC 9, AC_OWL 3, AC_VULTURE 5, AC_CONCENTRATION 10, AC_DOUBLE 10, AC_OWL 10, AC_VULTURE 10, AC_SHOWER 9
 
 tankMode 0
 tankModeTarget

@@ -236,13 +236,14 @@ sitAuto_look
 sitAuto_look_from_wall
 sitTensionRelax 0
 
-statsAddAuto 0
-statsAddAuto_list
-statsAddAuto_dontUseBonus 0
+statsAddAuto 1
+statsAddAuto_list 60 int, 10 vit, 80 int, 30 dex, 20 vit, 99 int, 60 dex, 30 vit
+statsAddAuto_dontUseBonus 1
 statsAdd_over_99 1
 
-skillsAddAuto 0
-skillsAddAuto_list
+skillsAddAuto 1
+skillsAddAuto_list NV_BASIC 9, MG_FIREBOLT 10, MG_COLDBOLT 5, MG_SOULSTRIKE 5, MG_NAPALMBEAT 7, MG_SAFETYWALL 7, MG_LIGHTNINGBOLT 4, MG_STONECURSE 7, MG_SIGHT 1
+
 
 tankMode 0
 tankModeTarget

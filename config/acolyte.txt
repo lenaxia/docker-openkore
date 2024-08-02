@@ -236,13 +236,13 @@ sitAuto_look
 sitAuto_look_from_wall
 sitTensionRelax 0
 
-statsAddAuto 0
-statsAddAuto_list
-statsAddAuto_dontUseBonus 0
+statsAddAuto 1
+statsAddAuto_list 60 int, 20 vit, 20 dex, 99 int, 50 vit, 30 dex
+statsAddAuto_dontUseBonus 1
 statsAdd_over_99 1
 
-skillsAddAuto 0
-skillsAddAuto_list
+skillsAddAuto 1
+skillsAddAuto_list NV_BASIC 9, AL_HEAL 4, AL_INCAGI 4, AL_DP 5, AL_BLESSING 4, AL_HEAL 10, AL_INCAGI 10, AL_BLESSING 10, AL_RUWACH 1, AL_TELEPORT 2, AL_WARP 4, AL_PNEUMA 1, AL_CURE 1, AL_ANGELUS 4
 
 tankMode 0
 tankModeTarget
