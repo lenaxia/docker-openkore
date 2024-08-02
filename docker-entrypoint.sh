@@ -38,9 +38,9 @@ if [ -z "${OK_PWD}" ]; then echo "Missing OK_PWD environment variable. Unable to
 if [ -z "${OK_CHAR}" ]; then OK_CHAR=1; fi
 
 # Define the probabilities for each option
-FOLLOW_PROB1=0.4  # 40% chance of following OK_FOLLOW_USERNAME1
-FOLLOW_PROB2=0.4  # 40% chance of following OK_FOLLOW_USERNAME2
-NO_FOLLOW_PROB=0.2  # 20% chance of not following anyone
+FOLLOW_PROB1=1  # 100% chance of following OK_FOLLOW_USERNAME1
+FOLLOW_PROB2=0  # 0% chance of following OK_FOLLOW_USERNAME2
+NO_FOLLOW_PROB=0  # 0% chance of not following anyone
 
 # Generate a random number between 0 and 1
 RANDOM_NUM=$(awk 'BEGIN{srand(); print rand()}')
@@ -124,12 +124,12 @@ else
             if ( $(echo "$RANDOM_NUM < $FOLLOW_PROB1" | bc -l) ); then
                 if ! [ -z "${OK_FOLLOW_USERNAME1}" ]; then
                     sed -i "s|^followTarget.*|followTarget ${OK_FOLLOW_USERNAME1}|g" /opt/openkore/control/config.txt
-                    sed -i "s|^attackAuto 2$|attackAuto 1|g" /opt/openkore/control/config.txt
+                    #sed -i "s|^attackAuto 2$|attackAuto 1|g" /opt/openkore/control/config.txt
                 fi
             elif (( $(echo "$RANDOM_NUM < $FOLLOW_PROB1 + $FOLLOW_PROB2" | bc -l) )); then
                 if ! [ -z "${OK_FOLLOW_USERNAME2}" ]; then
                     sed -i "s|^followTarget.*|followTarget ${OK_FOLLOW_USERNAME2}|g" /opt/openkore/control/config.txt
-                    sed -i "s|^attackAuto 2$|attackAuto 1|g" /opt/openkore/control/config.txt
+                    #sed -i "s|^attackAuto 2$|attackAuto 1|g" /opt/openkore/control/config.txt
                 fi
             else
                 # Do not follow anyone
