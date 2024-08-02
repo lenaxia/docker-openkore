@@ -53,7 +53,7 @@ if [ "${OK_KILLSTEAL}" = "1" ]; then
 fi
 
 if [ -z "${OK_USERNAMEMAXSUFFIX}" ]; then
-    sed -i "s|^username$|username ${OK_USERNAME}|g" /opt/openkore/control/config.txt
+    sed -i "s|^username.*|username ${OK_USERNAME}|g" /opt/openkore/control/config.txt
 else
     if [ -z "${MYSQL_HOST}" ]; then echo "Missing MYSQL_HOST environment variable. Unable to continue."; exit 1; fi
     if [ -z "${MYSQL_DB}" ]; then echo "Missing MYSQL_DB environment variable. Unable to continue."; exit 1; fi
@@ -65,14 +65,14 @@ else
         MYSQL_QUERY="SELECT \`online\` FROM \`char\` WHERE name='${USERNAME}';"
         CHAR_IS_ONLINE=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_QUERY}");
 
-        printf "Username %s online status: %s" $USERNAME $CHAR_IS_ONLINE
+        printf "Username %s online status: %s\n" $USERNAME $CHAR_IS_ONLINE
 
         if [ "${CHAR_IS_ONLINE}" == "0" ]; then
             MYSQL_QUERY="UPDATE \`char\` SET \`online\`=1 WHERE name='${USERNAME}'"
             mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_QUERY}"
             CLASS=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "SELECT class FROM \`char\` WHERE name='${USERNAME}';")
 
-            printf "Selected username %s (%s)" ${USERNAME} ${CLASS}
+            printf "Selected username %s (%s)\n" ${USERNAME} ${CLASS}
             case ${CLASS} in
                 4) # ACOLYTE
                     mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
