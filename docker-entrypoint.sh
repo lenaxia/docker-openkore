@@ -71,7 +71,7 @@ else
 
         printf "Username %s (%s) online status: %s\n" "$USERNAME" "$CHAR_NAME" "$CHAR_IS_ONLINE"
 
-        if [ "${CHAR_IS_ONLINE}" == "0" ]; then
+        if [ "${CHAR_IS_ONLINE}" = "0" ]; then
             MYSQL_QUERY="UPDATE \`char\` SET \`online\`=1 WHERE name='${USERNAME}'"
             mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_QUERY}"
             CLASS=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "SELECT class FROM \`char\` WHERE char_num='${OK_CHAR}' AND account_id='${ACCOUNT_ID}';")
