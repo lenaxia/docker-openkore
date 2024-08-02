@@ -64,10 +64,15 @@ else
         USERNAME=${OK_USERNAME}${i}
         MYSQL_QUERY="SELECT \`online\` FROM \`char\` WHERE name='${USERNAME}';"
         CHAR_IS_ONLINE=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_QUERY}");
-        if [ "${CHAR_IS_ONLINE}" = "0" ]; then
+
+        printf "Username %s online status: %s" $USERNAME $CHAR_IS_ONLINE
+
+        if [ "${CHAR_IS_ONLINE}" == "0" ]; then
             MYSQL_QUERY="UPDATE \`char\` SET \`online\`=1 WHERE name='${USERNAME}'"
             mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_QUERY}"
             CLASS=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "SELECT class FROM \`char\` WHERE name='${USERNAME}';")
+
+            printf "Selected username %s (%s)" ${USERNAME} ${CLASS}
             case ${CLASS} in
                 4) # ACOLYTE
                     mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
