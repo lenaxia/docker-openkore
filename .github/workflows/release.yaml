@@ -13,6 +13,8 @@ jobs:
     permissions:
       contents: read
       packages: write
+    env:
+      DOCKER_BUILDKIT: 1
 
     steps:
     - name: Setup Node.js
@@ -49,6 +51,14 @@ jobs:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Cache Docker layers
+      uses: actions/cache@v3
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ hashFiles('Dockerfile') }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
 
     - name: Build and push
       uses: docker/build-push-action@v3
