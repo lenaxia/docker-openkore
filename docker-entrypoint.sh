@@ -70,11 +70,11 @@ else
     SELECTED_USERNAME=${AVAILABLE_USERNAMES[$((RANDOM % ${#AVAILABLE_USERNAMES[@]}))]}
     CLASS=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "SELECT class FROM \`char\` WHERE name='${SELECTED_USERNAME}';")
     case ${CLASS} in
-        4) # ACOLYTE
+        4)  # ACOLYTE
             mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
             cp /opt/openkore/control/class/acolyte.txt /opt/openkore/control/config.txt
             ;;
-        8) # PRIEST
+        8)  # PRIEST
             mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
             cp /opt/openkore/control/class/priest.txt /opt/openkore/control/config.txt
             ;;
@@ -82,11 +82,11 @@ else
             mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
             cp /opt/openkore/control/class/monk.txt /opt/openkore/control/config.txt
             ;;
-        2) # MAGE
+        2)  # MAGE
             mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
             cp /opt/openkore/control/class/mage.txt /opt/openkore/control/config.txt
             ;;
-        9) # WIZARD
+        9)  # WIZARD
             mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
             cp /opt/openkore/control/class/wizard.txt /opt/openkore/control/config.txt
             ;;
@@ -94,16 +94,16 @@ else
             mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
             cp /opt/openkore/control/class/sage.txt /opt/openkore/control/config.txt
             ;;
-        1) # SWORDMAN
+        1)  # SWORDMAN
             mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
             cp /opt/openkore/control/class/swordman.txt /opt/openkore/control/config.txt
             ;;
-        7) # KNIGHT
+        7)  # KNIGHT
             mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
             cp /opt/openkore/control/class/knight.txt /opt/openkore/control/config.txt
             ;;
     esac
-    sed -i "s|^username.*|username ${SELECTED_USERNAME}|g" /opt/openkore/control/config.txt
+    sed -i "s|^username$|username ${SELECTED_USERNAME}|g" /opt/openkore/control/config.txt
     # 1,2 -> Follow OK_FOLLOW_USERNAME1, 3,4 -> Follow OK_FOLLOW_USERNAME2, 5-10 -> Do not follow
     case $(shuf -i1-10 -n1) in
         1|2)
@@ -121,8 +121,8 @@ else
     esac
 fi
 sed -i "s|^master$|master ${OK_SERVER}|g" /opt/openkore/control/config.txt
-sed -i "s|^server.*|server 0|g" /opt/openkore/control/config.txt
-sed -i "s|^password.*|password ${OK_PWD}|g" /opt/openkore/control/config.txt
+sed -i "s|^server\s*\(.*\)$|server 0|g" /opt/openkore/control/config.txt
+sed -i "s|^password$|password ${OK_PWD}|g" /opt/openkore/control/config.txt
 sed -i "s|^char$|char ${OK_CHAR}|g" /opt/openkore/control/config.txt
 sed -i "s|^autoResponse 0$|autoResponse 1|g" /opt/openkore/control/config.txt
 sed -i "s|^autoResponseOnHeal 0$|autoResponseOnHeal 1|g" /opt/openkore/control/config.txt
