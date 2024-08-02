@@ -10,7 +10,7 @@
 # OK_IP="IP address of the Ragnarok Online server"
 # OK_USERNAME="Account username"
 # OK_PWD="Account password"
-# OK_CHAR="Character slot. Default: 1"
+# OK_CHAR="Character slot. Default: 0"
 # OK_USERNAMEMAXSUFFIX="Maximum number of suffixes to generate with the username."
 # OK_KILLSTEAL="It is ok that the bot attacks monster that are already being attacked by other players."
 # OK_FOLLOW_USERNAME1="Name of the username to follow with 20% probability"
@@ -35,7 +35,7 @@ echo "Initalizing Docker container..."
 if [ -z "${OK_IP}" ]; then echo "Missing OK_IP environment variable. Unable to continue."; exit 1; fi
 if [ -z "${OK_USERNAME}" ]; then echo "Missing OK_USERNAME environment variable. Unable to continue."; exit 1; fi
 if [ -z "${OK_PWD}" ]; then echo "Missing OK_PWD environment variable. Unable to continue."; exit 1; fi
-if [ -z "${OK_CHAR}" ]; then OK_CHAR=1; fi
+if [ -z "${OK_CHAR}" ]; then OK_CHAR=0; fi
 
 # Define the probabilities for each option
 FOLLOW_PROB1=1  # 100% chance of following OK_FOLLOW_USERNAME1
@@ -62,17 +62,21 @@ else
     for i in `seq 0 ${OK_USERNAMEMAXSUFFIX}`;
     do
         USERNAME=${OK_USERNAME}${i}
-        MYSQL_QUERY="SELECT \`online\` FROM \`char\` WHERE name='${USERNAME}';"
+        MYSQL_ACCOUNT_ID_QUERY="SELECT \`account_id\` FROM \`login\` WHERE userid='${USERNAME}';"
+        ACCOUNT_ID=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_ACCOUNT_ID_QUERY}");
+        MYSQL_CHAR_NAME_QUERY="SELECT \`name\` FROM \`char\` WHERE account_id='${ACCOUNT_ID}' AND char_num='${OK_CHAR}';"
+        CHAR_NAME=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_CHAR_NAME_QUERY}");
+        MYSQL_QUERY="SELECT \`online\` FROM \`char\` WHERE name='${CHAR_NAME}';"
         CHAR_IS_ONLINE=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_QUERY}");
 
-        printf "Username %s online status: %s\n" $USERNAME $CHAR_IS_ONLINE
+        printf "Username %s (%s) online status: %s\n" $USERNAME $CHAR_NAME $CHAR_IS_ONLINE
 
         if [ "${CHAR_IS_ONLINE}" == "0" ]; then
             MYSQL_QUERY="UPDATE \`char\` SET \`online\`=1 WHERE name='${USERNAME}'"
             mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_QUERY}"
-            CLASS=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "SELECT class FROM \`char\` WHERE name='${USERNAME}';")
+            CLASS=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "SELECT class FROM \`char\` WHERE char_num='${OK_CHAR}' AND account_id='${ACCOUNT_ID}';")
 
-            printf "Selected username %s (%s)\n" ${USERNAME} ${CLASS}
+            printf "Selected username %s (%s) (%s)\n" ${USERNAME} ${CHAR_NAME} ${CLASS}
             case ${CLASS} in
                 4) # ACOLYTE
                     mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
