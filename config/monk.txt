@@ -601,14 +601,14 @@ buyAuto {
 	disabled 0
 }
 
-sellAuto 0
-sellAuto_npc
+sellAuto 1
+sellAuto_npc prontera 73 134
 sellAuto_standpoint
 sellAuto_distance 5
 sellAuto_npc_steps s
 
-storageAuto 0
-storageAuto_npc
+storageAuto 1
+storageAuto_npc prontera 151 29
 storageAuto_standpoint
 storageAuto_distance 5
 storageAuto_npc_type 1
