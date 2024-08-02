@@ -81,6 +81,14 @@ else
                     mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
                     cp /opt/openkore/control/class/monk.txt /opt/openkore/control/config.txt
                     ;;
+                5) # Merchant
+                    mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
+                    cp /opt/openkore/control/class/merchant.txt /opt/openkore/control/config.txt
+                    ;;
+                10) # Blacksmith
+                    mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
+                    cp /opt/openkore/control/class/blacksmith.txt /opt/openkore/control/config.txt
+                    ;;
                 2) # MAGE
                     mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
                     cp /opt/openkore/control/class/mage.txt /opt/openkore/control/config.txt
@@ -92,6 +100,14 @@ else
                 16) # SAGE
                     mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
                     cp /opt/openkore/control/class/sage.txt /opt/openkore/control/config.txt
+                    ;;
+                3) # Archer
+                    mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
+                    cp /opt/openkore/control/class/archer.txt /opt/openkore/control/config.txt
+                    ;;
+                11) # Hunter 
+                    mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
+                    cp /opt/openkore/control/class/hunter.txt /opt/openkore/control/config.txt
                     ;;
                 1) # SWORDMAN
                     mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak

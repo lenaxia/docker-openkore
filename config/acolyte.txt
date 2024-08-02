@@ -357,101 +357,90 @@ pet_return 20
 # You can copy & paste any block multiple times. So if you want to
 # configure two attack skills, just duplicate the attackSkillSlot block.
 
-useSelf_skill Heal {
-   lvl 10
-   hp < 50%
-   sp > 10%
+partySkill AL_HEAL {
+        lvl 5
+        target_hp < 80%
+        sp > 10 %
 }
 
-useSelf_skill Increase AGI {
-   lvl 10
-   whenStatusInactive Increase AGI
-   sp > 10%
-   timeout 5
+partySkill AL_HEAL {
+        lvl 10
+        target_hp < 40%
+        sp > 10 %
 }
 
-useSelf_skill Blessing {
-   lvl 10
-   whenStatusInactive Blessing
-   sp > 10%
-   timeout 5
-}
+#partySkill AL_BLESSING {
+#       lvl 10
+#       sp > 64
+#       notInTown 1
+#       timeout 3
+#       #target_whenStatusInactive Blessing
+#       target_timeout 240
+#}
 
-useSelf_skill Ruwach {
-   lvl 1
-   whenStatusInactive Ruwach
-   sp > 10%
-   timeout 120
-}
+#partySkill AL_INCAGI {
+#       lvl 10
+#       sp > 45
+#       notInTown 0
+#       timeout 3
+#       target_whenStatusInactive EFST_INC_AGI
+#       target_timeout 240
+#}
 
-useSelf_skill Angelus {
-   lvl 10
-   whenStatusInactive Angelus
-   sp > 10%
-   timeout 120
-}
-
-useSelf_skill Cure {
-   lvl 1
-   whenStatusActive Cursed, Blinded, Chaos, Silenced
-   sp > 10%
-   timeout 5
-}
-
-attackSkillSlot Holy Light {
-   lvl 1
-   sp > 10%
-   monsters 
-}
-
-attackSkillSlot Decrease AGI {
-   lvl 10
-   sp > 10%
-   monsters 
-   maxAttempts 5
-   maxUses 1
-}
-
-partySkill Heal {
-   lvl 5
-   target_hp < 70%
-   sp > 10 %
-}
-
-partySkill Blessing {
-   lvl 10
-   sp > 64
-   notInTown 1
-   timeout 3
-   target_whenStatusInactive Blessing
-   target_timeout 240
-}
-
-partySkill Increase AGI {
-   lvl 10
-   sp > 45
-   notInTown 0
-   timeout 3
-   target_whenStatusInactive Increase AGI
-   target_timeout 240
-}
-
-partySkill Angelus {
-   lvl 10
-   sp > 45
-   notInTown 1
-   timeout 3
-   target_whenStatusInactive Angelus
-   target_timeout 240
+partySkill AL_ANGELUS {
+        lvl 10
+        sp > 45
+        notInTown 1
+        timeout 3
+        #target_whenStatusInactive Angelus
+        target_timeout 240
         isSelfSkill 1
 }
 
-partySkill Cure {
-   lvl 1
-   target_whenStatusActive Cursed, Blinded, Chaos, Silenced
-   sp > 10%
-   timeout 5
+partySkill AL_CURE {
+        lvl 1
+        target_whenStatusActive Cursed, Blinded, Chaos, Silenced
+        sp > 10%
+        timeout 5
 }
+
+userSelf_skill AL_HEAL {
+        lvl 5 
+        target_hp < 40%
+        sp > 10 %
+}
+
+#useSelf_skill AL_INCAGI {
+#       lvl 10
+#       #whenStatusInactive Increase AGI
+#       sp > 10%
+#       timeout 5
+#}
+#
+#useSelf_skill AL_BLESSING {
+#       lvl 10
+#       whenStatusInactive Blessing
+#       sp > 10%
+#       timeout 5
+#}
+
+useSelf_skill AL_ANGELUS {
+        lvl 10
+        whenStatusInactive Angelus
+        sp > 10%
+        timeout 5
+}
+
+useSelf_skill AL_CURE {
+        lvl 1
+        whenStatusActive Cursed, Blinded, Chaos, Silenced
+        sp > 10%
+        timeout 5
+}
+
+useSelf_skill_smartHeal 1
+
+partySkillDistance 0..8
 
 autoSwitch_default_rightHand
 autoSwitch_default_leftHand

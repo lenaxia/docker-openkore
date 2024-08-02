@@ -65,9 +65,9 @@ attackAuto_onlyWhenSafe 0
 attackAuto_followTarget 1
 attackAuto_inLockOnly 1
 attackAuto_notInTown 1
-attackDistance 8
+attackDistance 1.5
 attackDistanceAuto 0
-attackMaxDistance 8
+attackMaxDistance 2.5
 attackMaxRouteDistance 100
 attackMaxRouteTime 4
 attackMinPlayerDistance 2
@@ -237,12 +237,12 @@ sitAuto_look_from_wall
 sitTensionRelax 0
 
 statsAddAuto 1
-statsAddAuto_list 60 dex, 40 agi, 12 int, 10 vit, 99 dex, 60 agi, 30 vit
+statsAddAuto_list 10 str, 20 dex, 10 vit, 40 str, 30 vit, 30 dex, 80 str, 12 int, 40 dex, 50 vit
 statsAddAuto_dontUseBonus 1
 statsAdd_over_99 1
 
 skillsAddAuto 1
-skillsAddAuto_list NV_BASIC 9, AC_OWL 3, AC_VULTURE 5, AC_CONCENTRATION 10, AC_DOUBLE 10, AC_OWL 10, AC_VULTURE 10, AC_SHOWER 9
+skillsAddAuto_list NV_BASIC 9, MC_INCCARRY 10, MC_PUSHCART 10, MC_DISCOUNT 10, MC_MAMMONITE 10, MC_IDENTIFY 1, MC_OVERCHARGE 8
 
 tankMode 0
 tankModeTarget
@@ -357,31 +357,80 @@ pet_return 20
 # You can copy & paste any block multiple times. So if you want to
 # configure two attack skills, just duplicate the attackSkillSlot block.
 
-attackSkillSlot Double Strafe {
-   lvl 10
-   dist 10
-   sp > 5 %
-   aggressives >= 2
-   monsters
-   inLockOnly 1
-   notInTown 1
+attackSkillSlot NC_AXETORNADO {
+        lvl 5
+        sp >= 5%
+        target_dist < 3
+        monstersCount > 2
+        monstersCountDist < 2
+        notWhileSitting 1
+        notInTown 1
 }
 
-useSelf_skill Improve Concentration {
-   lvl 10
-   whenStatusInactive Improve Concentration
-   onAction attack
+attackSkillSlot BS_HAMMERFALL {
+        lvl 5
+        sp >= 5%
+        monstersCount > 3
+        monstersCountDist < 2
+        notInTown 1
+        timeout 10
 }
 
-attackSkillSlot Arrow Shower {
-   lvl 10
-   dist 10
-   sp > 5
-   aggressives >= 3
-   inLockOnly 0
-   monsters
-   notMonsters
-   notInTown 0
+useSelf_skill MC_LOUD {
+        lvl 1
+        whenStatusInactive EFST_SHOUT
+        notWhileSitting 1
+        notInTown 1
+        timeout 0
+}
+
+useSelf_skill WS_CARTBOOST {
+        lvl 1
+        sp > 10%
+        whenStatusInactive EFST_CARTBOOST
+        notWhileSitting 1
+        notInTown 1
+        timeout 0
+}
+
+useSelf_skill BS_ADRENALINE {
+        lvl 5
+        sp >= 10%
+        whenStatusInactive EFST_ADRENALINE
+        notWhileSitting 1
+        notInTown 1
+}
+
+useSelf_skill WS_OVERTHRUSTMAX {
+        lvl 5
+        sp >= 10%
+        whenStatusInactive EFST_OVERTHRUSTMAX
+        notWhileSitting 1
+        notInTown 1
+}
+
+useSelf_skill BS_WEAPONPERFECT {
+        lvl 5
+        sp >= 10%
+        whenStatusInactive EFST_WEAPONPERFECT
+        notWhileSitting 1
+        notInTown 1
+}
+
+useSelf_skill BS_MAXIMIZE {
+        lvl 5
+        sp >= 90%
+        whenStatusInactive EFST_MAXIMIZE
+        notWhileSitting 1
+        notInTown 1
+}
+
+useSelf_skill BS_MAXIMIZE {
+        lvl 5
+        sp <= 50%
+        whenStatusActive EFST_MAXIMIZE
+        notWhileSitting 1
+        notInTown 1
 }
 
 autoSwitch_default_rightHand
@@ -467,11 +516,11 @@ useSelf_item {
 
 ######## Autostorage/autosell ########
 
-buyAuto Arrow {
-	maxAmount 1000 
-	minAmount 20
+buyAuto Red_Potion {
+	maxAmount 70
+	minAmount 0
 	npc prt_in 134 221
-	distance 6 
+	distance 6
 }
 
 sellAuto 1
