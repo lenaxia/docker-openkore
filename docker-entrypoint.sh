@@ -37,6 +37,14 @@ if [ -z "${OK_USERNAME}" ]; then echo "Missing OK_USERNAME environment variable.
 if [ -z "${OK_PWD}" ]; then echo "Missing OK_PWD environment variable. Unable to continue."; exit 1; fi
 if [ -z "${OK_CHAR}" ]; then OK_CHAR=1; fi
 
+# Define the probabilities for each option
+FOLLOW_PROB1=0.4  # 40% chance of following OK_FOLLOW_USERNAME1
+FOLLOW_PROB2=0.4  # 40% chance of following OK_FOLLOW_USERNAME2
+NO_FOLLOW_PROB=0.2  # 20% chance of not following anyone
+
+# Generate a random number between 0 and 1
+RANDOM_NUM=$(awk 'BEGIN{srand(); print rand()}')
+
 if [ "${OK_KILLSTEAL}" = "1" ]; then 
     sed -i "1507s|return 0|return 1|" /opt/openkore/src/Misc.pm
     sed -i "1534s|return 0|return 1|" /opt/openkore/src/Misc.pm
@@ -56,7 +64,7 @@ else
         USERNAME=${OK_USERNAME}${i}
         MYSQL_QUERY="SELECT \`online\` FROM \`char\` WHERE name='${USERNAME}';"
         CHAR_IS_ONLINE=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_QUERY}");
-        if [ "${CHAR_IS_ONLINE}" == "0" ]; then
+        if [ "${CHAR_IS_ONLINE}" = "0" ]; then
             MYSQL_QUERY="UPDATE \`char\` SET \`online\`=1 WHERE name='${USERNAME}'"
             mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_QUERY}"
             CLASS=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "SELECT class FROM \`char\` WHERE name='${USERNAME}';")
@@ -95,21 +103,24 @@ else
                     ;;
             esac
             sed -i "s|^username.*|username ${USERNAME}|g" /opt/openkore/control/config.txt
-            # 1,2 -> Follow OK_FOLLOW_USERNAME1, 3,4 -> Follow OK_FOLLOW_USERNAME2, 5-10 -> Do not follow
-            case $(shuf -i1-10 -n1) in
-                1|2)
-                    if ! [ -z "${OK_FOLLOW_USERNAME1}" ]; then
-                        sed -i "s|^followTarget$|followTarget ${OK_FOLLOW_USERNAME1}|g" /opt/openkore/control/config.txt
-                        #sed -i "s|^attackAuto 2$|attackAuto 1|g" /opt/openkore/control/config.txt
-                    fi
-                    ;;
-                3|4)
-                    if ! [ -z "${OK_FOLLOW_USERNAME2}" ]; then
-                        sed -i "s|^followTarget$|followTarget ${OK_FOLLOW_USERNAME2}|g" /opt/openkore/control/config.txt
-                        #sed -i "s|^attackAuto 2$|attackAuto 1|g" /opt/openkore/control/config.txt
-                    fi
-                    ;;
-            esac
+            
+            # Check the random number against the probabilities
+            if ( $(echo "$RANDOM_NUM < $FOLLOW_PROB1" | bc -l) ); then
+                if ! [ -z "${OK_FOLLOW_USERNAME1}" ]; then
+                    sed -i "s|^followTarget.*|followTarget ${OK_FOLLOW_USERNAME1}|g" /opt/openkore/control/config.txt
+                    sed -i "s|^attackAuto 2$|attackAuto 1|g" /opt/openkore/control/config.txt
+                fi
+            elif (( $(echo "$RANDOM_NUM < $FOLLOW_PROB1 + $FOLLOW_PROB2" | bc -l) )); then
+                if ! [ -z "${OK_FOLLOW_USERNAME2}" ]; then
+                    sed -i "s|^followTarget.*|followTarget ${OK_FOLLOW_USERNAME2}|g" /opt/openkore/control/config.txt
+                    sed -i "s|^attackAuto 2$|attackAuto 1|g" /opt/openkore/control/config.txt
+                fi
+            else
+                # Do not follow anyone
+                sed -i "s|^followTarget.*|followTarget |g" /opt/openkore/control/config.txt
+                sed -i "s|^attackAuto 1$|attackAuto 2|g" /opt/openkore/control/config.txt
+            fi
+
             break
         fi
     done
