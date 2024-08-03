@@ -11,6 +11,7 @@
 # OK_USERNAME="Account username"
 # OK_PWD="Account password"
 # OK_CHAR="Character slot. Default: 0"
+# OK_LOCKMAP="prt_fld07"
 # OK_USERNAMEMAXSUFFIX="Maximum number of suffixes to generate with the username."
 # OK_KILLSTEAL="It is ok that the bot attacks monster that are already being attacked by other players."
 # OK_FOLLOW_USERNAME1="Name of the username to follow with 20% probability"
@@ -36,6 +37,7 @@ if [ -z "${OK_IP}" ]; then echo "Missing OK_IP environment variable. Unable to c
 if [ -z "${OK_USERNAME}" ]; then echo "Missing OK_USERNAME environment variable. Unable to continue."; exit 1; fi
 if [ -z "${OK_PWD}" ]; then echo "Missing OK_PWD environment variable. Unable to continue."; exit 1; fi
 if [ -z "${OK_CHAR}" ]; then OK_CHAR=0; fi
+if [ -z "${OK_LOCKMAP}" ]; then OK_LOCKMAP="prt_fld07"; fi
 
 if [ "${OK_KILLSTEAL}" = "1" ]; then 
     sed -i "1507s|return 0|return 1|" /opt/openkore/src/Misc.pm
@@ -146,11 +148,11 @@ sed -i "s|^follow 0$|follow 1|g" /opt/openkore/control/config.txt
 sed -i "s|^followSitAuto 0$|followSitAuto 1|g" /opt/openkore/control/config.txt
 sed -i "s|^attackAuto_inLockOnly 1$|attackAuto_inLockOnly 0|g" /opt/openkore/control/config.txt
 
-sed -i "s|^lockMap$|lockMap gef_fild07|g" /opt/openkore/control/config.txt
-sed -i "s|^lockMap_x$|lockMap_x 218|g" /opt/openkore/control/config.txt
-sed -i "s|^lockMap_y$|lockMap_y 185|g" /opt/openkore/control/config.txt
-sed -i "s|^lockMap_randX$|lockMap_randX 115|g" /opt/openkore/control/config.txt
-sed -i "s|^lockMap_randY$|lockMap_randY 20|g" /opt/openkore/control/config.txt
+sed -i "s|^lockMap$|lockMap ${OK_LOCKMAP}|g" /opt/openkore/control/config.txt
+#sed -i "s|^lockMap_x$|lockMap_x 218|g" /opt/openkore/control/config.txt
+#sed -i "s|^lockMap_y$|lockMap_y 185|g" /opt/openkore/control/config.txt
+#sed -i "s|^lockMap_randX$|lockMap_randX 115|g" /opt/openkore/control/config.txt
+#sed -i "s|^lockMap_randY$|lockMap_randY 20|g" /opt/openkore/control/config.txt
 
 sed -i "s|^ip [0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+$|ip ${OK_IP}|g" /opt/openkore/tables/servers.txt
 
