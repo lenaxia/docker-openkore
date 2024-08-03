@@ -470,7 +470,7 @@ useSelf_item {
 buyAuto Arrow {
 	maxAmount 1000 
 	minAmount 20
-	npc prt_in 134 221
+	npc prt_fild05 290 221
 	distance 6 
 }
 
