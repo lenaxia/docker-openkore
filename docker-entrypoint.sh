@@ -76,12 +76,12 @@ else
                 4) # ACOLYTE
                     mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
                     cp /opt/openkore/control/class/acolyte.txt /opt/openkore/control/config.txt
-                    sed -i "s|^attackAuto.*|attackAuto 0|g" /opt/openkore/control/config.txt
+                    sed -i "s|^attackAuto.*|attackAuto -1|g" /opt/openkore/control/config.txt
                     ;;
                 8) # PRIEST
                     mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
                     cp /opt/openkore/control/class/priest.txt /opt/openkore/control/config.txt
-                    sed -i "s|^attackAuto.*|attackAuto 0|g" /opt/openkore/control/config.txt
+                    sed -i "s|^attackAuto.*|attackAuto -1|g" /opt/openkore/control/config.txt
                     ;;
                 15) # MONK
                     mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
@@ -158,5 +158,8 @@ sed -i "s|^lockMap_randX$|lockMap_randX 115|g" /opt/openkore/control/config.txt
 sed -i "s|^lockMap_randY$|lockMap_randY 20|g" /opt/openkore/control/config.txt
 
 sed -i "s|^ip [0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+$|ip ${OK_IP}|g" /opt/openkore/tables/servers.txt
+
+printf "\nOpenKore configuration complete, launching instance\n\n"
+printf "===================================================\n\n"
 
 exec "$@"
