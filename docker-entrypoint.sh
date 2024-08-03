@@ -52,6 +52,10 @@ if [ "${OK_KILLSTEAL}" = "1" ]; then
     sed -i "1583s|return 0|return 1|" /opt/openkore/src/Misc.pm
 fi
 
+if ! [ -z "${OK_FOLLOW_USERNAME1}" ]; then
+    sed -i "s|^followTarget.*|followTarget ${OK_FOLLOW_USERNAME1}|g" /opt/openkore/control/config.txt
+fi
+
 if [ -z "${OK_USERNAMEMAXSUFFIX}" ]; then
     sed -i "s|^username.*|username ${OK_USERNAME}|g" /opt/openkore/control/config.txt
 else
@@ -72,7 +76,7 @@ else
         printf "Username %s (%s) online status: %s\n" "$USERNAME" "$CHAR_NAME" "$CHAR_IS_ONLINE"
 
         if [ "${CHAR_IS_ONLINE}" = "0" ]; then
-            MYSQL_QUERY="UPDATE \`char\` SET \`online\`=1 WHERE name='${USERNAME}'"
+            MYSQL_QUERY="UPDATE \`char\` SET \`online\`=1 WHERE account_id='${ACCOUNT_ID}' AND char_num='${OK_CHAR}'"
             mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_QUERY}"
             CLASS=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "SELECT class FROM \`char\` WHERE char_num='${OK_CHAR}' AND account_id='${ACCOUNT_ID}';")
 
@@ -81,10 +85,12 @@ else
                 4) # ACOLYTE
                     mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
                     cp /opt/openkore/control/class/acolyte.txt /opt/openkore/control/config.txt
+                    sed -i "s|^attackAuto.*|attackAuto 0|g" /opt/openkore/control/config.txt
                     ;;
                 8) # PRIEST
                     mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
                     cp /opt/openkore/control/class/priest.txt /opt/openkore/control/config.txt
+                    sed -i "s|^attackAuto.*|attackAuto 0|g" /opt/openkore/control/config.txt
                     ;;
                 15) # MONK
                     mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
@@ -93,59 +99,51 @@ else
                 5) # Merchant
                     mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
                     cp /opt/openkore/control/class/merchant.txt /opt/openkore/control/config.txt
+                    sed -i "s|^attackAuto.*|attackAuto 2|g" /opt/openkore/control/config.txt
                     ;;
                 10) # Blacksmith
                     mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
                     cp /opt/openkore/control/class/blacksmith.txt /opt/openkore/control/config.txt
+                    sed -i "s|^attackAuto.*|attackAuto 2|g" /opt/openkore/control/config.txt
                     ;;
                 2) # MAGE
                     mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
                     cp /opt/openkore/control/class/mage.txt /opt/openkore/control/config.txt
+                    sed -i "s|^attackAuto.*|attackAuto 1|g" /opt/openkore/control/config.txt
                     ;;
                 9) # WIZARD
                     mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
                     cp /opt/openkore/control/class/wizard.txt /opt/openkore/control/config.txt
+                    sed -i "s|^attackAuto.*|attackAuto 1|g" /opt/openkore/control/config.txt
                     ;;
                 16) # SAGE
                     mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
                     cp /opt/openkore/control/class/sage.txt /opt/openkore/control/config.txt
+                    sed -i "s|^attackAuto.*|attackAuto 1|g" /opt/openkore/control/config.txt
                     ;;
                 3) # Archer
                     mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
                     cp /opt/openkore/control/class/archer.txt /opt/openkore/control/config.txt
+                    sed -i "s|^attackAuto.*|attackAuto 2|g" /opt/openkore/control/config.txt
                     ;;
                 11) # Hunter 
                     mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
                     cp /opt/openkore/control/class/hunter.txt /opt/openkore/control/config.txt
+                    sed -i "s|^attackAuto.*|attackAuto 2|g" /opt/openkore/control/config.txt
                     ;;
                 1) # SWORDMAN
                     mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
                     cp /opt/openkore/control/class/swordman.txt /opt/openkore/control/config.txt
+                    sed -i "s|^attackAuto.*|attackAuto 2|g" /opt/openkore/control/config.txt
                     ;;
                 7) # KNIGHT
                     mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
                     cp /opt/openkore/control/class/knight.txt /opt/openkore/control/config.txt
+                    sed -i "s|^attackAuto.*|attackAuto 2|g" /opt/openkore/control/config.txt
                     ;;
             esac
             sed -i "s|^username.*|username ${USERNAME}|g" /opt/openkore/control/config.txt
             
-            # Check the random number against the probabilities
-            if ( $(echo "$RANDOM_NUM < $FOLLOW_PROB1" | bc -l) ); then
-                if ! [ -z "${OK_FOLLOW_USERNAME1}" ]; then
-                    sed -i "s|^followTarget.*|followTarget ${OK_FOLLOW_USERNAME1}|g" /opt/openkore/control/config.txt
-                    #sed -i "s|^attackAuto 2$|attackAuto 1|g" /opt/openkore/control/config.txt
-                fi
-            elif (( $(echo "$RANDOM_NUM < $FOLLOW_PROB1 + $FOLLOW_PROB2" | bc -l) )); then
-                if ! [ -z "${OK_FOLLOW_USERNAME2}" ]; then
-                    sed -i "s|^followTarget.*|followTarget ${OK_FOLLOW_USERNAME2}|g" /opt/openkore/control/config.txt
-                    #sed -i "s|^attackAuto 2$|attackAuto 1|g" /opt/openkore/control/config.txt
-                fi
-            else
-                # Do not follow anyone
-                sed -i "s|^followTarget.*|followTarget |g" /opt/openkore/control/config.txt
-                sed -i "s|^attackAuto 1$|attackAuto 2|g" /opt/openkore/control/config.txt
-            fi
-
             break
         fi
     done
