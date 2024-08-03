@@ -37,7 +37,7 @@ if [ -z "${OK_IP}" ]; then echo "Missing OK_IP environment variable. Unable to c
 if [ -z "${OK_USERNAME}" ]; then echo "Missing OK_USERNAME environment variable. Unable to continue."; exit 1; fi
 if [ -z "${OK_PWD}" ]; then echo "Missing OK_PWD environment variable. Unable to continue."; exit 1; fi
 if [ -z "${OK_CHAR}" ]; then OK_CHAR=0; fi
-if [ -z "${OK_LOCKMAP}" ]; then OK_LOCKMAP="prt_fld07"; fi
+if [ -z "${OK_LOCKMAP}" ]; then OK_LOCKMAP="prt_flid07"; fi
 
 if [ "${OK_KILLSTEAL}" = "1" ]; then 
     sed -i "1507s|return 0|return 1|" /opt/openkore/src/Misc.pm
