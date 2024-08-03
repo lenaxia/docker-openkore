@@ -37,14 +37,6 @@ if [ -z "${OK_USERNAME}" ]; then echo "Missing OK_USERNAME environment variable.
 if [ -z "${OK_PWD}" ]; then echo "Missing OK_PWD environment variable. Unable to continue."; exit 1; fi
 if [ -z "${OK_CHAR}" ]; then OK_CHAR=0; fi
 
-# Define the probabilities for each option
-FOLLOW_PROB1=1  # 100% chance of following OK_FOLLOW_USERNAME1
-FOLLOW_PROB2=0  # 0% chance of following OK_FOLLOW_USERNAME2
-NO_FOLLOW_PROB=0  # 0% chance of not following anyone
-
-# Generate a random number between 0 and 1
-RANDOM_NUM=$(awk 'BEGIN{srand(); print rand()}')
-
 if [ "${OK_KILLSTEAL}" = "1" ]; then 
     sed -i "1507s|return 0|return 1|" /opt/openkore/src/Misc.pm
     sed -i "1534s|return 0|return 1|" /opt/openkore/src/Misc.pm
@@ -53,6 +45,7 @@ if [ "${OK_KILLSTEAL}" = "1" ]; then
 fi
 
 if ! [ -z "${OK_FOLLOW_USERNAME1}" ]; then
+    printf "Setting follow target to %s\n" "${OK_FOLLOW_USERNAME1}"
     sed -i "s|^followTarget.*|followTarget ${OK_FOLLOW_USERNAME1}|g" /opt/openkore/control/config.txt
 fi
 
@@ -72,8 +65,6 @@ else
         CHAR_NAME=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_CHAR_NAME_QUERY}");
         MYSQL_QUERY="SELECT \`online\` FROM \`char\` WHERE account_id='${ACCOUNT_ID}' AND char_num='${OK_CHAR}';"
         CHAR_IS_ONLINE=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_QUERY}");
-
-        printf "Username %s (%s) online status: %s\n" "$USERNAME" "$CHAR_NAME" "$CHAR_IS_ONLINE"
 
         if [ "${CHAR_IS_ONLINE}" = "0" ]; then
             MYSQL_QUERY="UPDATE \`char\` SET \`online\`=1 WHERE account_id='${ACCOUNT_ID}' AND char_num='${OK_CHAR}'"
@@ -155,7 +146,7 @@ sed -i "s|^char$|char ${OK_CHAR}|g" /opt/openkore/control/config.txt
 sed -i "s|^autoResponse 0$|autoResponse 1|g" /opt/openkore/control/config.txt
 sed -i "s|^autoResponseOnHeal 0$|autoResponseOnHeal 1|g" /opt/openkore/control/config.txt
 sed -i "s|^route_randomWalk_inTown 0$|route_randomWalk_inTown 1|g" /opt/openkore/control/config.txt
-sed -i "s|^partyAuto 1$|partyAuto 2|g" /opt/openkore/control/config.txt
+sed -i "s|^partyAuto.*|partyAuto 2|g" /opt/openkore/control/config.txt
 sed -i "s|^follow 0$|follow 1|g" /opt/openkore/control/config.txt
 sed -i "s|^followSitAuto 0$|followSitAuto 1|g" /opt/openkore/control/config.txt
 sed -i "s|^attackAuto_inLockOnly 1$|attackAuto_inLockOnly 0|g" /opt/openkore/control/config.txt
