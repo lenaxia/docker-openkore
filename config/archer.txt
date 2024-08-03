@@ -95,7 +95,7 @@ attackEquip_rightAccessory
 attackEquip_robe
 attackEquip_armor
 attackEquip_shoes
-attackEquip_arrow
+attackEquip_arrow Arrow
 
 #You need the breakTime plugin: http://wiki.openkore.com/index.php?title=BreakTime
 autoBreakTime {
