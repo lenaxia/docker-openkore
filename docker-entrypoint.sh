@@ -44,11 +44,6 @@ if [ "${OK_KILLSTEAL}" = "1" ]; then
     sed -i "1583s|return 0|return 1|" /opt/openkore/src/Misc.pm
 fi
 
-if ! [ -z "${OK_FOLLOW_USERNAME1}" ]; then
-    printf "Setting follow target to %s\n" "${OK_FOLLOW_USERNAME1}"
-    sed -i "s|^followTarget.*|followTarget ${OK_FOLLOW_USERNAME1}|g" /opt/openkore/control/config.txt
-fi
-
 if [ -z "${OK_USERNAMEMAXSUFFIX}" ]; then
     sed -i "s|^username.*|username ${OK_USERNAME}|g" /opt/openkore/control/config.txt
 else
@@ -158,6 +153,11 @@ sed -i "s|^lockMap_randX$|lockMap_randX 115|g" /opt/openkore/control/config.txt
 sed -i "s|^lockMap_randY$|lockMap_randY 20|g" /opt/openkore/control/config.txt
 
 sed -i "s|^ip [0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+$|ip ${OK_IP}|g" /opt/openkore/tables/servers.txt
+
+if ! [ -z "${OK_FOLLOW_USERNAME1}" ]; then
+    printf "Setting follow target to %s\n" "${OK_FOLLOW_USERNAME1}"
+    sed -i "s|^followTarget.*|followTarget ${OK_FOLLOW_USERNAME1}|g" /opt/openkore/control/config.txt
+fi
 
 printf "\nOpenKore configuration complete, launching instance\n\n"
 printf "===================================================\n\n"
