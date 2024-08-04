@@ -155,6 +155,7 @@ sed -i "s|^lockMap$|lockMap ${OK_LOCKMAP}|g" /opt/openkore/control/config.txt
 #sed -i "s|^lockMap_randY$|lockMap_randY 20|g" /opt/openkore/control/config.txt
 
 sed -i "s|^ip [0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+$|ip ${OK_IP}|g" /opt/openkore/tables/servers.txt
+sed -i "s|^addTableFolders.*|addTableFolders kRO/RagexeRE_2020_04_01b;translated/kRO_english|g" /opt/openkore/tables/servers.txt
 
 if ! [ -z "${OK_FOLLOW_USERNAME1}" ]; then
     printf "Setting follow target to %s\n" "${OK_FOLLOW_USERNAME1}"
