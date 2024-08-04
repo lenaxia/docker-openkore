@@ -371,21 +371,8 @@ attackSkillSlot MG_FIREBOLT {
    #maxUses 
 }
 
-attackSkillSlot Soul Strike {
-   lvl 10
-   dist 8
-   #maxCastTime 0.1
-   #minCastTime 0
-   sp > 10
-   stopWhenHit 1
-   inLockOnly 1
-   notInTown 1
-   #monsters 
-   #maxUses 
-}
-
 attackSkillSlot Cold Bolt {
-   lvl 10
+   lvl 5
    dist 8
    #maxCastTime 0.1
    #minCastTime 0
