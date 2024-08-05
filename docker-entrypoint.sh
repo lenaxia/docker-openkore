@@ -38,7 +38,12 @@ if [ -z "${OK_USERNAME}" ]; then echo "Missing OK_USERNAME environment variable.
 if [ -z "${OK_PWD}" ]; then echo "Missing OK_PWD environment variable. Unable to continue."; exit 1; fi
 if [ -z "${OK_CHAR}" ]; then OK_CHAR=0; fi
 if [ -z "${OK_LOCKMAP}" ]; then OK_LOCKMAP="prt_flid07"; fi
+
 if [ -z "${OK_ADDTABLEFOLDERS}" ]; then OK_ADDTABLEFOLDERS="kRO/RagexeRE_2020_04_01b;translated/kRO_english"; fi
+if [ -z "${OK_MASTER_VERSION}" ]; then OK_MASTER_VERSION="1"; fi
+if [ -z "${OK_VERSION}" ]; then OK_VERSION="128"; fi
+if [ -z "${OK_CHARBLOCKSIZE}" ]; then OK_CHARBLOCKSIZE="155"; fi
+if [ -z "${OK_SERVER_TYPE}" ]; then OK_SERVER_TYPE="kRO_RagexeRE_2020_04_01b"; fi
 
 if [ "${OK_KILLSTEAL}" = "1" ]; then 
     sed -i "1507s|return 0|return 1|" /opt/openkore/src/Misc.pm
@@ -164,6 +169,10 @@ sed -i "s|^lockMap$|lockMap ${OK_LOCKMAP}|g" /opt/openkore/control/config.txt
 
 sed -i "s|^ip [0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+$|ip ${OK_IP}|g" /opt/openkore/tables/servers.txt
 sed -i "s|^addTableFolders.*|addTableFolders ${OK_ADDTABLEFOLDERS}|g" /opt/openkore/tables/servers.txt
+sed -i "s|^master_version.*|master_version ${OK_MASTER_VERSION}|g" /opt/openkore/tables/servers.txt
+sed -i "s|^version.*|version ${OK_VERSION}|g" /opt/openkore/tables/servers.txt
+sed -i "s|^charBlockSize.*|charBlockSize ${OK_CHARBLOCKSIZE}|g" /opt/openkore/tables/servers.txt
+sed -i "s|^serverType.*|serverType ${OK_SERVER_TYPE}|g" /opt/openkore/tables/servers.txt
 
 if ! [ -z "${OK_FOLLOW_USERNAME1}" ]; then
     printf "Setting follow target to %s\n" "${OK_FOLLOW_USERNAME1}"
