@@ -28,7 +28,8 @@ RUN sed 's/^master.*/master Korea - kRO: Sara\/Rangidis\/Thanatos/' /opt/openkor
 
 COPY init-openkore.sh /opt/openkore/
 
-RUN /opt/openkore/init-openkore.sh
+RUN chmod +x /opt/openkore/init-openkore.sh && \
+    /opt/openkore/init-openkore.sh
 
 # Runtime stage
 FROM ubuntu:24.04
