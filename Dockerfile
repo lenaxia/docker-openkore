@@ -24,6 +24,12 @@ WORKDIR /opt/openkore
 # Build OpenKore
 RUN make
 
+RUN sed 's/^master.*/master Korea - kRO: Sara\/Rangidis\/Thanatos/' /opt/openkore/control/config.txt
+
+COPY init-openkore.sh /opt/openkore/
+
+RUN /opt/openkore/init-openkore.sh
+
 # Runtime stage
 FROM ubuntu:24.04
 

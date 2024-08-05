@@ -36,6 +36,8 @@ echo "Initalizing Docker container..."
 if [ -z "${OK_IP}" ]; then echo "Missing OK_IP environment variable. Unable to continue."; exit 1; fi
 if [ -z "${OK_USERNAME}" ]; then echo "Missing OK_USERNAME environment variable. Unable to continue."; exit 1; fi
 if [ -z "${OK_PWD}" ]; then echo "Missing OK_PWD environment variable. Unable to continue."; exit 1; fi
+
+if [ -z "${OK_SERVER}" ]; then OK_SERVER="localHost - rA/Herc"; fi
 if [ -z "${OK_CHAR}" ]; then OK_CHAR=0; fi
 if [ -z "${OK_LOCKMAP}" ]; then OK_LOCKMAP="prt_flid07"; fi
 
