@@ -38,12 +38,20 @@ if [ -z "${OK_USERNAME}" ]; then echo "Missing OK_USERNAME environment variable.
 if [ -z "${OK_PWD}" ]; then echo "Missing OK_PWD environment variable. Unable to continue."; exit 1; fi
 if [ -z "${OK_CHAR}" ]; then OK_CHAR=0; fi
 if [ -z "${OK_LOCKMAP}" ]; then OK_LOCKMAP="prt_flid07"; fi
+if [ -z "${OK_ADDTABLEFOLDERS}" ]; then OK_ADDTABLEFOLDERS="kRO/RagexeRE_2020_04_01b;translated/kRO_english"; fi
 
 if [ "${OK_KILLSTEAL}" = "1" ]; then 
     sed -i "1507s|return 0|return 1|" /opt/openkore/src/Misc.pm
     sed -i "1534s|return 0|return 1|" /opt/openkore/src/Misc.pm
     sed -i "1571s|return !objectIsMovingTowardsPlayer(\$monster);|return 1;|" /opt/openkore/src/Misc.pm
     sed -i "1583s|return 0|return 1|" /opt/openkore/src/Misc.pm
+fi
+
+if [ ! -z "${OK_CONFIG_OVERRIDE_URL}" ]; then
+    echo "Downloading config tarball from ${OK_CONFIG_TARBALL_URL}"
+    wget -O /tmp/config.tar.gz "${OK_CONFIG_TARBALL_URL}"
+    tar -xzf /tmp/config.tar.gz -C /opt/openkore/control/class/
+    rm /tmp/config.tar.gz
 fi
 
 if [ -z "${OK_USERNAMEMAXSUFFIX}" ]; then
@@ -155,7 +163,7 @@ sed -i "s|^lockMap$|lockMap ${OK_LOCKMAP}|g" /opt/openkore/control/config.txt
 #sed -i "s|^lockMap_randY$|lockMap_randY 20|g" /opt/openkore/control/config.txt
 
 sed -i "s|^ip [0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+$|ip ${OK_IP}|g" /opt/openkore/tables/servers.txt
-sed -i "s|^addTableFolders.*|addTableFolders kRO/RagexeRE_2020_04_01b;translated/kRO_english|g" /opt/openkore/tables/servers.txt
+sed -i "s|^addTableFolders.*|addTableFolders ${OK_ADDTABLEFOLDERS}|g" /opt/openkore/tables/servers.txt
 
 if ! [ -z "${OK_FOLLOW_USERNAME1}" ]; then
     printf "Setting follow target to %s\n" "${OK_FOLLOW_USERNAME1}"
