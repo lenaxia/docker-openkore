@@ -48,6 +48,7 @@ if [ -z "${OK_CHARBLOCKSIZE}" ]; then OK_CHARBLOCKSIZE="155"; fi
 if [ -z "${OK_SERVER_TYPE}" ]; then OK_SERVER_TYPE="kRO_RagexeRE_2020_04_01b"; fi
 
 if [ -z "${REDIS_CONNSTR}" ]; then echo "Missing REDIS_CONNSTR environment variable. Unable to continue."; exit 1; fi
+if [ -z "${REDIS_PASSWORD}" ]; then echo "Missing REDIS_PASSWORD environment variable. Unable to continue."; exit 1; fi
 if [ -z "${LOCK_TIMEOUT}" ]; then LOCK_TIMEOUT=600; fi
 if [ -z "${LOCK_KEY}" ]; then LOCK_KEY="openkore_account_lock:${OK_IP}"; fi
 
@@ -66,7 +67,7 @@ if [ ! -z "${OK_CONFIG_OVERRIDE_URL}" ]; then
 fi
 
 # Check if Redis is available
-redis-cli -u "$REDIS_CONNSTR" PING >/dev/null 2>&1
+redis-cli -a "${REDIS_PASSWORD}" -u "$REDIS_CONNSTR" PING >/dev/null 2>&1
 if [ $? -ne 0 ]; then
     echo "Error: Unable to connect to Redis at $REDIS_HOST:$REDIS_PORT. Falling back to no locking mechanism."
     USE_REDIS_LOCK=false
@@ -96,7 +97,7 @@ else
 
         if [ "${CHAR_IS_ONLINE}" = "0" ]; then
             # Attempt to acquire the lock
-            LOCK_ACQUIRED=$(redis-cli -u "$REDIS_CONNSTR" SETNX "$LOCK_KEY" "$ACCOUNT_ID" EX "$LOCK_TIMEOUT")
+            LOCK_ACQUIRED=$(redis-cli -a "${REDIS_PASSWORD}" -u "$REDIS_CONNSTR" SETNX "$LOCK_KEY" "$ACCOUNT_ID" EX "$LOCK_TIMEOUT")
 
             if [ "$LOCK_ACQUIRED" = "OK" ]; then
                 # Lock acquired, proceed with account selection
@@ -171,7 +172,7 @@ else
                 # Start a background process to refresh the lock
                 (
                     while true; do
-                        redis-cli -u "$REDIS_CONNSTR" EXPIRE "$LOCK_KEY" "$LOCK_TIMEOUT"
+                        redis-cli -a "${REDIS_PASSWORD}" -u "$REDIS_CONNSTR" EXPIRE "$LOCK_KEY" "$LOCK_TIMEOUT"
                         sleep "$((LOCK_TIMEOUT / 2))"  # Refresh lock every half of the expiration time
                     done
                 ) &
@@ -179,7 +180,7 @@ else
 
                 # Start a background process to release the lock on termination signals/events
                 (
-                    trap 'redis-cli -u "$REDIS_CONNSTR" DEL "$LOCK_KEY"; exit' SIGTERM SIGKILL TERM
+                    trap 'redis-cli -a "${REDIS_PASSWORD}" -u "$REDIS_CONNSTR" DEL "$LOCK_KEY"; exit' SIGTERM SIGKILL TERM
                     while true; do
                         sleep 60  # Sleep for a minute, adjust as needed
                     done
