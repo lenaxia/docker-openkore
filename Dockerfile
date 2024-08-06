@@ -53,6 +53,7 @@ RUN apt-get update && \
     dnsutils \
     make \
     python3 \
+    redis-tools \
     build-essential \ 
     libncurses-dev \ 
     && rm -rf /var/lib/apt/lists/*
