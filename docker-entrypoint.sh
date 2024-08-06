@@ -47,7 +47,12 @@ if [ -z "${OK_VERSION}" ]; then OK_VERSION="128"; fi
 if [ -z "${OK_CHARBLOCKSIZE}" ]; then OK_CHARBLOCKSIZE="155"; fi
 if [ -z "${OK_SERVER_TYPE}" ]; then OK_SERVER_TYPE="kRO_RagexeRE_2020_04_01b"; fi
 
-if [ "${OK_KILLSTEAL}" = "1" ]; then 
+if [ -z "${REDIS_HOST}" ]; then echo "Missing REDIS_HOST environment variable. Unable to continue."; exit 1; fi
+if [ -z "${REDIS_PORT}" ]; then REDIS_PORT=6379; fi
+if [ -z "${LOCK_TIMEOUT}" ]; then LOCK_TIMEOUT=600; fi
+if [ -z "${LOCK_KEY}" ]; then LOCK_KEY="openkore_account_lock:${OK_IP}"; fi
+
+if [ "${OK_KILLSTEAL}" = "1" ]; then
     sed -i "1507s|return 0|return 1|" /opt/openkore/src/Misc.pm
     sed -i "1534s|return 0|return 1|" /opt/openkore/src/Misc.pm
     sed -i "1571s|return !objectIsMovingTowardsPlayer(\$monster);|return 1;|" /opt/openkore/src/Misc.pm
@@ -59,6 +64,15 @@ if [ ! -z "${OK_CONFIG_OVERRIDE_URL}" ]; then
     wget -O /tmp/config.tar.gz "${OK_CONFIG_TARBALL_URL}"
     tar -xzf /tmp/config.tar.gz -C /opt/openkore/control/class/
     rm /tmp/config.tar.gz
+fi
+
+# Check if Redis is available
+redis-cli -h "$REDIS_HOST" -p "$REDIS_PORT" PING >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+    echo "Error: Unable to connect to Redis at $REDIS_HOST:$REDIS_PORT. Falling back to no locking mechanism."
+    USE_REDIS_LOCK=false
+else
+    USE_REDIS_LOCK=true
 fi
 
 if [ -z "${OK_USERNAMEMAXSUFFIX}" ]; then
@@ -82,75 +96,102 @@ else
         CHAR_IS_ONLINE=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_QUERY}");
 
         if [ "${CHAR_IS_ONLINE}" = "0" ]; then
-            MYSQL_QUERY="UPDATE \`char\` SET \`online\`=1 WHERE account_id='${ACCOUNT_ID}' AND char_num='${OK_CHAR}'"
-            mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_QUERY}"
-            CLASS=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "SELECT class FROM \`char\` WHERE char_num='${OK_CHAR}' AND account_id='${ACCOUNT_ID}';")
+            # Attempt to acquire the lock
+            LOCK_ACQUIRED=$(redis-cli -h "$REDIS_HOST" -p "$REDIS_PORT" SETNX "$LOCK_KEY" "$ACCOUNT_ID" EX "$LOCK_TIMEOUT")
 
-            printf "Selected username %s (%s) (%s)\n" "${USERNAME}" "${CHAR_NAME}" "${CLASS}"
-            case ${CLASS} in
-                4) # ACOLYTE
-                    mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
-                    cp /opt/openkore/control/class/acolyte.txt /opt/openkore/control/config.txt
-                    sed -i "s|^attackAuto.*|attackAuto -1|g" /opt/openkore/control/config.txt
-                    ;;
-                8) # PRIEST
-                    mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
-                    cp /opt/openkore/control/class/priest.txt /opt/openkore/control/config.txt
-                    sed -i "s|^attackAuto.*|attackAuto -1|g" /opt/openkore/control/config.txt
-                    ;;
-                15) # MONK
-                    mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
-                    cp /opt/openkore/control/class/monk.txt /opt/openkore/control/config.txt
-                    ;;
-                5) # Merchant
-                    mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
-                    cp /opt/openkore/control/class/merchant.txt /opt/openkore/control/config.txt
-                    sed -i "s|^attackAuto.*|attackAuto 2|g" /opt/openkore/control/config.txt
-                    ;;
-                10) # Blacksmith
-                    mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
-                    cp /opt/openkore/control/class/blacksmith.txt /opt/openkore/control/config.txt
-                    sed -i "s|^attackAuto.*|attackAuto 2|g" /opt/openkore/control/config.txt
-                    ;;
-                2) # MAGE
-                    mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
-                    cp /opt/openkore/control/class/mage.txt /opt/openkore/control/config.txt
-                    sed -i "s|^attackAuto.*|attackAuto 1|g" /opt/openkore/control/config.txt
-                    ;;
-                9) # WIZARD
-                    mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
-                    cp /opt/openkore/control/class/wizard.txt /opt/openkore/control/config.txt
-                    sed -i "s|^attackAuto.*|attackAuto 1|g" /opt/openkore/control/config.txt
-                    ;;
-                16) # SAGE
-                    mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
-                    cp /opt/openkore/control/class/sage.txt /opt/openkore/control/config.txt
-                    sed -i "s|^attackAuto.*|attackAuto 1|g" /opt/openkore/control/config.txt
-                    ;;
-                3) # Archer
-                    mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
-                    cp /opt/openkore/control/class/archer.txt /opt/openkore/control/config.txt
-                    sed -i "s|^attackAuto.*|attackAuto 2|g" /opt/openkore/control/config.txt
-                    ;;
-                11) # Hunter 
-                    mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
-                    cp /opt/openkore/control/class/hunter.txt /opt/openkore/control/config.txt
-                    sed -i "s|^attackAuto.*|attackAuto 2|g" /opt/openkore/control/config.txt
-                    ;;
-                1) # SWORDMAN
-                    mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
-                    cp /opt/openkore/control/class/swordman.txt /opt/openkore/control/config.txt
-                    sed -i "s|^attackAuto.*|attackAuto 2|g" /opt/openkore/control/config.txt
-                    ;;
-                7) # KNIGHT
-                    mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
-                    cp /opt/openkore/control/class/knight.txt /opt/openkore/control/config.txt
-                    sed -i "s|^attackAuto.*|attackAuto 2|g" /opt/openkore/control/config.txt
-                    ;;
-            esac
-            sed -i "s|^username.*|username ${USERNAME}|g" /opt/openkore/control/config.txt
-            
-            break
+            if [ "$LOCK_ACQUIRED" = "OK" ]; then
+                # Lock acquired, proceed with account selection
+                MYSQL_QUERY="UPDATE \`char\` SET \`online\`=1 WHERE account_id='${ACCOUNT_ID}' AND char_num='${OK_CHAR}'"
+                mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_QUERY}"
+                CLASS=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "SELECT class FROM \`char\` WHERE char_num='${OK_CHAR}' AND account_id='${ACCOUNT_ID}';")
+
+                printf "Selected username %s (%s) (%s)\n" "${USERNAME}" "${CHAR_NAME}" "${CLASS}"
+                case ${CLASS} in
+                    4) # ACOLYTE
+                        mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
+                        cp /opt/openkore/control/class/acolyte.txt /opt/openkore/control/config.txt
+                        sed -i "s|^attackAuto.*|attackAuto -1|g" /opt/openkore/control/config.txt
+                        ;;
+                    8) # PRIEST
+                        mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
+                        cp /opt/openkore/control/class/priest.txt /opt/openkore/control/config.txt
+                        sed -i "s|^attackAuto.*|attackAuto -1|g" /opt/openkore/control/config.txt
+                        ;;
+                    15) # MONK
+                        mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
+                        cp /opt/openkore/control/class/monk.txt /opt/openkore/control/config.txt
+                        ;;
+                    5) # Merchant
+                        mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
+                        cp /opt/openkore/control/class/merchant.txt /opt/openkore/control/config.txt
+                        sed -i "s|^attackAuto.*|attackAuto 2|g" /opt/openkore/control/config.txt
+                        ;;
+                    10) # Blacksmith
+                        mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
+                        cp /opt/openkore/control/class/blacksmith.txt /opt/openkore/control/config.txt
+                        sed -i "s|^attackAuto.*|attackAuto 2|g" /opt/openkore/control/config.txt
+                        ;;
+                    2) # MAGE
+                        mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
+                        cp /opt/openkore/control/class/mage.txt /opt/openkore/control/config.txt
+                        sed -i "s|^attackAuto.*|attackAuto 1|g" /opt/openkore/control/config.txt
+                        ;;
+                    9) # WIZARD
+                        mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
+                        cp /opt/openkore/control/class/wizard.txt /opt/openkore/control/config.txt
+                        sed -i "s|^attackAuto.*|attackAuto 1|g" /opt/openkore/control/config.txt
+                        ;;
+                    16) # SAGE
+                        mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
+                        cp /opt/openkore/control/class/sage.txt /opt/openkore/control/config.txt
+                        sed -i "s|^attackAuto.*|attackAuto 1|g" /opt/openkore/control/config.txt
+                        ;;
+                    3) # Archer
+                        mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
+                        cp /opt/openkore/control/class/archer.txt /opt/openkore/control/config.txt
+                        sed -i "s|^attackAuto.*|attackAuto 2|g" /opt/openkore/control/config.txt
+                        ;;
+                    11) # Hunter
+                        mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
+                        cp /opt/openkore/control/class/hunter.txt /opt/openkore/control/config.txt
+                        sed -i "s|^attackAuto.*|attackAuto 2|g" /opt/openkore/control/config.txt
+                        ;;
+                    1) # SWORDMAN
+                        mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
+                        cp /opt/openkore/control/class/swordman.txt /opt/openkore/control/config.txt
+                        sed -i "s|^attackAuto.*|attackAuto 2|g" /opt/openkore/control/config.txt
+                        ;;
+                    7) # KNIGHT
+                        mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
+                        cp /opt/openkore/control/class/knight.txt /opt/openkore/control/config.txt
+                        sed -i "s|^attackAuto.*|attackAuto 2|g" /opt/openkore/control/config.txt
+                        ;;
+                esac
+                sed -i "s|^username.*|username ${USERNAME}|g" /opt/openkore/control/config.txt
+
+                # Start a background process to refresh the lock
+                (
+                    while true; do
+                        redis-cli -h "$REDIS_HOST" -p "$REDIS_PORT" EXPIRE "$LOCK_KEY" "$LOCK_TIMEOUT"
+                        sleep "$((LOCK_TIMEOUT / 2))"  # Refresh lock every half of the expiration time
+                    done
+                ) &
+                LOCK_REFRESH_PID=$!
+
+                # Start a background process to release the lock on termination signals/events
+                (
+                    trap 'redis-cli -h "$REDIS_HOST" -p "$REDIS_PORT" DEL "$LOCK_KEY"; exit' SIGTERM SIGKILL TERM
+                    while true; do
+                        sleep 60  # Sleep for a minute, adjust as needed
+                    done
+                ) &
+                LOCK_RELEASE_PID=$!
+
+                break
+            else
+                # Lock not acquired, try the next account
+                continue
+            fi
         fi
     done
 fi
