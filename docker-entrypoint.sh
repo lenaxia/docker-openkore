@@ -141,7 +141,7 @@ else
                     2) # MAGE
                         mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak
                         cp /opt/openkore/control/class/mage.txt /opt/openkore/control/config.txt
-                        sed -i "s|^attackAuto.*|attackAuto 1|g" /opt/openkore/control/config.txt
+                        sed -i "s|^attackAuto.*|attackAuto 2|g" /opt/openkore/control/config.txt
                         ;;
                     9) # WIZARD
                         mv /opt/openkore/control/config.txt /opt/openkore/control/config.txt.bak

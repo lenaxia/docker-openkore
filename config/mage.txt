@@ -365,7 +365,6 @@ attackSkillSlot MG_FIREBOLT {
    #minCastTime 0
    sp > 10
    stopWhenHit 1
-   inLockOnly 1
    notInTown 1
    #monsters 
    #maxUses 
@@ -378,7 +377,6 @@ attackSkillSlot Cold Bolt {
    #minCastTime 0
    sp > 10
    stopWhenHit 1
-   inLockOnly 1
    notInTown 1
    #monsters 
    #maxUses 
@@ -391,7 +389,6 @@ attackSkillSlot Lightning Bolt {
    #minCastTime 0
    sp > 10
    stopWhenHit 1
-   inLockOnly 1
    notInTown 1
    #monsters 
    #maxUses 
@@ -401,7 +398,6 @@ useSelf_skill Energy Coat {
    lvl 1
    whenStatusInactive Energy Coat
    stopWhenHit 1
-   inLockOnly 0
    notWhileSitting 1
    notInTown 1
 }
