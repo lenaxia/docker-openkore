@@ -50,8 +50,8 @@ if [ -z "${OK_SERVER_TYPE}" ]; then OK_SERVER_TYPE="kRO_RagexeRE_2020_04_01b"; f
 if [ -z "${REDIS_HOST}" ]; then echo "Missing REDIS_HOST environment variable. Unable to continue."; exit 1; fi
 if [ -z "${REDIS_PORT}" ]; then REDIS_PORT=6379; fi
 if [ -z "${REDIS_PASSWORD}" ]; then echo "Missing REDIS_PASSWORD environment variable. Unable to continue. If no password use \"\""; exit 1; fi
-if [ -z "${LOCK_TIMEOUT}" ]; then LOCK_TIMEOUT=600; fi
-if [ -z "${LOCK_KEY}" ]; then LOCK_KEY="openkore_account_lock:${OK_IP}"; fi
+if [ -z "${LOCK_TIMEOUT}" ]; then LOCK_TIMEOUT=180; fi
+LOCK_KEY="openkore_account_lock:${OK_IP}"
 
 if [ "${OK_KILLSTEAL}" = "1" ]; then
     sed -i "1507s|return 0|return 1|" /opt/openkore/src/Misc.pm
@@ -68,11 +68,13 @@ if [ ! -z "${OK_CONFIG_OVERRIDE_URL}" ]; then
 fi
 
 # Check if Redis is available
+echo "Attempting to connect to Redis at ${REDIS_HOST}:${REDIS_PORT}"
 redis-cli -h "${REDIS_HOST}" -a "${REDIS_PASSWORD}" PING >/dev/null 2>&1
 if [ $? -ne 0 ]; then
     echo "Error: Unable to connect to Redis at $REDIS_HOST:$REDIS_PORT. Falling back to no locking mechanism."
     USE_REDIS_LOCK=false
 else
+    echo "Successfully connected to Redis"
     USE_REDIS_LOCK=true
 fi
 
@@ -86,6 +88,8 @@ else
     for i in `seq 0 ${OK_USERNAMEMAXSUFFIX}`;
     do
         USERNAME=${OK_USERNAME}${i}
+        echo "Querying account ${USERNAME}"
+
         MYSQL_ACCOUNT_ID_QUERY="SELECT \`account_id\` FROM \`login\` WHERE userid='${USERNAME}';"
         ACCOUNT_ID=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_ACCOUNT_ID_QUERY}");
         MYSQL_CHAR_NAME_QUERY="SELECT \`name\` FROM \`char\` WHERE account_id='${ACCOUNT_ID}' AND char_num='${OK_CHAR}';"
@@ -98,10 +102,12 @@ else
 
         if [ "${CHAR_IS_ONLINE}" = "0" ]; then
             # Attempt to acquire the lock
-            LOCK_ACQUIRED=$(redis-cli -h "${REDIS_HOST}" -a "${REDIS_PASSWORD}" SETNX "$LOCK_KEY" "$ACCOUNT_ID" EX "$LOCK_TIMEOUT")
+            LOCK_KEY="openkore_account_lock:${OK_IP}:${ACCOUNT_ID}"
+            LOCK_ACQUIRED=$(redis-cli -h "${REDIS_HOST}" -a "${REDIS_PASSWORD}" SET "$LOCK_KEY" "$HOSTNAME" NX EX "$LOCK_TIMEOUT")
 
             if [ "$LOCK_ACQUIRED" = "OK" ]; then
                 # Lock acquired, proceed with account selection
+                echo "Redis lock acquired for account ${USERNAME} (${ACCOUNT_ID}), character ${CHAR_NAME}"
                 MYSQL_QUERY="UPDATE \`char\` SET \`online\`=1 WHERE account_id='${ACCOUNT_ID}' AND char_num='${OK_CHAR}'"
                 mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_QUERY}"
                 CLASS=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "SELECT class FROM \`char\` WHERE char_num='${OK_CHAR}' AND account_id='${ACCOUNT_ID}';")
@@ -191,10 +197,12 @@ else
                 break
             else
                 # Lock not acquired, try the next account
+                echo "Failed to acquire Redis lock for account ${USERNAME} (${ACCOUNT_ID})"
                 continue
             fi
         fi
     done
+    if ! [ "$LOCK_ACQUIRED" = "OK" ]; then echo "Failed to acquire lock on any accounts, exiting"; exit 1; fi
 fi
 sed -i "s|^master$|master ${OK_SERVER}|g" /opt/openkore/control/config.txt
 sed -i "s|^server.*|server 0|g" /opt/openkore/control/config.txt
