@@ -24,13 +24,6 @@ WORKDIR /opt/openkore
 # Build OpenKore
 RUN make
 
-RUN sed 's/^master.*/master Korea - kRO: Sara\/Rangidis\/Thanatos/' /opt/openkore/control/config.txt
-
-COPY init-openkore.sh /opt/openkore/
-
-RUN chmod +x /opt/openkore/init-openkore.sh && \
-    /opt/openkore/init-openkore.sh
-
 # Runtime stage
 FROM ubuntu:24.04
 
@@ -63,6 +56,13 @@ COPY --from=build /opt/openkore /opt/openkore
 
 # Change ownership of /opt/openkore to the openkore user
 RUN chown -R openkore:openkore /opt/openkore
+
+RUN sed 's/^master.*/master Korea - kRO: Sara\/Rangidis\/Thanatos/' /opt/openkore/control/config.txt
+
+COPY init-openkore.sh /opt/openkore/
+
+RUN chmod +x /opt/openkore/init-openkore.sh && \
+    /opt/openkore/init-openkore.sh
 
 # Copy configuration files
 COPY recvpackets.txt /opt/openkore/tables/
