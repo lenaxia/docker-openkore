@@ -468,10 +468,9 @@ useSelf_item {
 ######## Autostorage/autosell ########
 
 buyAuto Arrow {
-	maxAmount 1000 
+	maxAmount 2000 
 	minAmount 20
-	npc prt_in 162 135
-    npc_steps c r~/Buy Arrows/ c
+	npc payon 159 96
 	distance 4 
 }
 
