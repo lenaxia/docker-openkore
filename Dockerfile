@@ -57,13 +57,6 @@ COPY --from=build /opt/openkore /opt/openkore
 # Change ownership of /opt/openkore to the openkore user
 RUN chown -R openkore:openkore /opt/openkore
 
-RUN sed 's/^master.*/master Korea - kRO: Sara\/Rangidis\/Thanatos/' /opt/openkore/control/config.txt
-
-COPY init-openkore.sh /opt/openkore/
-
-RUN chmod +x /opt/openkore/init-openkore.sh && \
-    /opt/openkore/init-openkore.sh
-
 # Copy configuration files
 COPY recvpackets.txt /opt/openkore/tables/
 COPY servers.txt /opt/openkore/tables/
@@ -101,6 +94,13 @@ RUN ln -s /usr/bin/python3 /usr/bin/python
 
 # Set the working directory
 WORKDIR /opt/openkore
+
+
+COPY init-openkore.sh /opt/openkore/
+
+RUN sed 's/^master.*/master localHost - rA\/Herc/' /opt/openkore/control/config.txt && \
+    chmod +x /opt/openkore/init-openkore.sh && \
+    /opt/openkore/init-openkore.sh
 
 # Add a health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
