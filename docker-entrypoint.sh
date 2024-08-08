@@ -239,6 +239,10 @@ sed -i "s|^serverType.*|serverType ${OK_SERVER_TYPE}|g" /opt/openkore/tables/ser
 
 #sed -i "s|^bus 0|bus 1|g" /opt/openkore/control/sys.txt
 
+echo "moc_fild20 10000" >> /opt/openkore/control/routeweights.txt
+echo "moc_fild22 10000" >> /opt/openkore/control/routeweights.txt
+echo "moc_fild21 10000" >> /opt/openkore/control/routeweights.txt
+
 if ! [ -z "${OK_FOLLOW_USERNAME1}" ]; then
     printf "Setting follow target to %s\n" "${OK_FOLLOW_USERNAME1}"
     sed -i "s|^followTarget.*|followTarget ${OK_FOLLOW_USERNAME1}|g" /opt/openkore/control/config.txt
