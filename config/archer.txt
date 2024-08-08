@@ -264,7 +264,7 @@ teleportAuto_allPlayers 0
 teleportAuto_notPlayers
 teleportAuto_atkCount 0
 teleportAuto_atkMiss 10
-teleportAuto_unstuck 0
+teleportAuto_unstuck 1
 teleportAuto_lostTarget 0
 teleportAuto_dropTarget 0
 teleportAuto_dropTargetKS 0
@@ -356,6 +356,21 @@ pet_return 20
 ######## Block options ########
 # You can copy & paste any block multiple times. So if you want to
 # configure two attack skills, just duplicate the attackSkillSlot block.
+
+useSelf_item Concentration Potion {
+        whenStatusInactive EFST_ATTHASTE_POTION1
+        inLockOnly 0
+        notWhileSitting 1
+        timeout 5
+        disabled 0
+}
+
+useSelf_item White Potion {
+        inLockOnly 0
+        notWhileSitting 0
+        hp < 20%
+        disabled 0
+}
 
 attackSkillSlot Double Strafe {
    lvl 10
@@ -472,6 +487,41 @@ buyAuto Arrow {
 	minAmount 20
 	npc payon 159 96
 	distance 4 
+}
+
+buyAuto Butterfly Wing {
+        npc prt_in 126 76
+        npc_steps b
+        isMarket 0
+        distance 3
+        minAmount 1
+        maxAmount 5
+}
+
+buyAuto Fly Wing {
+        npc prt_in 126 76
+        npc_steps b
+        isMarket 0
+        distance 3
+        minAmount 1
+        maxAmount 50
+}
+
+buyAuto White Potion {
+        npc prt_in 126 76
+        npc_steps b
+        isMarket 0
+        distance 3
+        minAmount 1
+        maxAmount 10
+}
+
+buyAuto Concentration Potion {
+        npc prt_in 126 76
+        npc_steps b
+        isMarket 0
+        distance 3
+        maxAmount 10
 }
 
 sellAuto 1
