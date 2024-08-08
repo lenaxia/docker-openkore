@@ -369,23 +369,23 @@ partySkill AL_HEAL {
         sp > 10 %
 }
 
-#partySkill AL_BLESSING {
-#       lvl 10
-#       sp > 64
-#       notInTown 1
-#       timeout 3
-#       #target_whenStatusInactive Blessing
-#       target_timeout 240
-#}
+partySkill AL_BLESSING {
+       lvl 10
+       sp > 64
+       notInTown 1
+       timeout 3
+       #target_whenStatusInactive Blessing
+       target_timeout 240
+}
 
-#partySkill AL_INCAGI {
-#       lvl 10
-#       sp > 45
-#       notInTown 0
-#       timeout 3
-#       target_whenStatusInactive EFST_INC_AGI
-#       target_timeout 240
-#}
+partySkill AL_INCAGI {
+       lvl 10
+       sp > 45
+       notInTown 0
+       timeout 3
+       target_whenStatusInactive EFST_INC_AGI
+       target_timeout 240
+}
 
 partySkill AL_ANGELUS {
         lvl 10
@@ -410,19 +410,19 @@ userSelf_skill AL_HEAL {
         sp > 10 %
 }
 
-#useSelf_skill AL_INCAGI {
-#       lvl 10
-#       #whenStatusInactive Increase AGI
-#       sp > 10%
-#       timeout 5
-#}
-#
-#useSelf_skill AL_BLESSING {
-#       lvl 10
-#       whenStatusInactive Blessing
-#       sp > 10%
-#       timeout 5
-#}
+useSelf_skill AL_INCAGI {
+       lvl 10
+       #whenStatusInactive Increase AGI
+       sp > 10%
+       timeout 5
+}
+
+useSelf_skill AL_BLESSING {
+       lvl 10
+       whenStatusInactive Blessing
+       sp > 10%
+       timeout 5
+}
 
 useSelf_skill AL_ANGELUS {
         lvl 10

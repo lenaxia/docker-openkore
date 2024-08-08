@@ -96,7 +96,6 @@ RUN ln -s /usr/bin/python3 /usr/bin/python
 # Set the working directory
 WORKDIR /opt/openkore
 
-
 COPY init-openkore.sh /opt/openkore/
 
 RUN sed 's/^master.*/master localHost - rA\/Herc/' /opt/openkore/control/config.txt && \
