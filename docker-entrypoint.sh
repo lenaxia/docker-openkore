@@ -238,6 +238,9 @@ sed -i "s|^version.*|version ${OK_VERSION}|g" /opt/openkore/tables/servers.txt
 sed -i "s|^charBlockSize.*|charBlockSize ${OK_CHARBLOCKSIZE}|g" /opt/openkore/tables/servers.txt
 sed -i "s|^serverType.*|serverType ${OK_SERVER_TYPE}|g" /opt/openkore/tables/servers.txt
 
+# Fix bad portal locations
+sed -i "s|^prontera 35 208|prontera 29 207|g" /opt/openkore/tables/portals.txt
+
 sed -i "s|^bus 0|bus 1|g" /opt/openkore/control/sys.txt
 
 echo "moc_fild20 10000" >> /opt/openkore/control/routeweights.txt

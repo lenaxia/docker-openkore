@@ -226,7 +226,7 @@ shop_random 0
 shop_useSkill 1
 
 sitAuto_hp_lower 40
-sitAuto_hp_upper 100
+sitAuto_hp_upper 80
 sitAuto_sp_lower 0
 sitAuto_sp_upper 0
 sitAuto_follow 0
@@ -360,7 +360,7 @@ pet_return 20
 partySkill AL_HEAL {
         lvl 5
         target_hp < 80%
-        sp > 10 %
+        sp > 80 %
 }
 
 partySkill AL_HEAL {
@@ -371,7 +371,7 @@ partySkill AL_HEAL {
 
 partySkill AL_BLESSING {
        lvl 10
-       sp > 64
+       sp > 40%
        notInTown 1
        timeout 3
        #target_whenStatusInactive Blessing
@@ -380,7 +380,8 @@ partySkill AL_BLESSING {
 
 partySkill AL_INCAGI {
        lvl 10
-       sp > 45
+       hp > 10%
+       sp > 40%
        notInTown 0
        timeout 3
        target_whenStatusInactive EFST_INC_AGI
@@ -392,7 +393,7 @@ partySkill AL_ANGELUS {
         sp > 45
         notInTown 1
         timeout 3
-        #target_whenStatusInactive Angelus
+        target_whenStatusInactive Angelus
         target_timeout 240
         isSelfSkill 1
 }
@@ -413,6 +414,8 @@ userSelf_skill AL_HEAL {
 useSelf_skill AL_INCAGI {
        lvl 10
        whenStatusInactive EFST_INC_AGI
+       notInTown 0
+       hp > 100
        sp > 10%
        timeout 5
 }
@@ -428,6 +431,7 @@ useSelf_skill AL_ANGELUS {
         lvl 10
         whenStatusInactive Angelus
         sp > 10%
+        notInTown 1
         timeout 5
 }
 
