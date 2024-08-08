@@ -67,7 +67,7 @@ attackAuto_inLockOnly 1
 attackAuto_notInTown 1
 attackDistance 8
 attackDistanceAuto 0
-attackMaxDistance 8
+attackMaxDistance 14
 attackMaxRouteDistance 100
 attackMaxRouteTime 4
 attackMinPlayerDistance 2
