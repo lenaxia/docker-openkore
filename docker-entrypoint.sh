@@ -223,6 +223,7 @@ sed -i "s|^partyAuto.*|partyAuto 2|g" /opt/openkore/control/config.txt
 sed -i "s|^follow 0$|follow 1|g" /opt/openkore/control/config.txt
 sed -i "s|^followSitAuto 0$|followSitAuto 1|g" /opt/openkore/control/config.txt
 sed -i "s|^attackAuto_inLockOnly 1$|attackAuto_inLockOnly 0|g" /opt/openkore/control/config.txt
+sed -i "/pauseCharServer.*/i\pauseCharLogin 2" /opt/openkore/control/config.txt # Add this to pause at login to avoid "Incoming data left in the buffer" issue
 
 sed -i "s|^lockMap$|lockMap ${OK_LOCKMAP}|g" /opt/openkore/control/config.txt
 #sed -i "s|^lockMap_x$|lockMap_x 218|g" /opt/openkore/control/config.txt
@@ -237,7 +238,7 @@ sed -i "s|^version.*|version ${OK_VERSION}|g" /opt/openkore/tables/servers.txt
 sed -i "s|^charBlockSize.*|charBlockSize ${OK_CHARBLOCKSIZE}|g" /opt/openkore/tables/servers.txt
 sed -i "s|^serverType.*|serverType ${OK_SERVER_TYPE}|g" /opt/openkore/tables/servers.txt
 
-#sed -i "s|^bus 0|bus 1|g" /opt/openkore/control/sys.txt
+sed -i "s|^bus 0|bus 1|g" /opt/openkore/control/sys.txt
 
 echo "moc_fild20 10000" >> /opt/openkore/control/routeweights.txt
 echo "moc_fild22 10000" >> /opt/openkore/control/routeweights.txt
