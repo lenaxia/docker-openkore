@@ -50,7 +50,7 @@ if [ -z "${OK_SERVER_TYPE}" ]; then OK_SERVER_TYPE="kRO_RagexeRE_2020_04_01b"; f
 if [ -z "${REDIS_HOST}" ]; then echo "Missing REDIS_HOST environment variable. Unable to continue."; exit 1; fi
 if [ -z "${REDIS_PORT}" ]; then REDIS_PORT=6379; fi
 if [ -z "${REDIS_PASSWORD}" ]; then echo "Missing REDIS_PASSWORD environment variable. Unable to continue. If no password use \"\""; exit 1; fi
-if [ -z "${LOCK_TIMEOUT}" ]; then LOCK_TIMEOUT=180; fi
+if [ -z "${LOCK_TIMEOUT}" ]; then LOCK_TIMEOUT=60; fi
 LOCK_KEY="openkore_account_lock:${OK_IP}"
 
 if [ "${OK_KILLSTEAL}" = "1" ]; then
@@ -88,22 +88,23 @@ else
     while [ "$LOCK_ACQUIRED" != "OK" ]; do
         for i in `seq 0 ${OK_USERNAMEMAXSUFFIX}`;
         do
+            sleep $((RANDOM % 0.5))
             USERNAME=${OK_USERNAME}${i}
             echo "Querying account ${USERNAME}"
 
             MYSQL_ACCOUNT_ID_QUERY="SELECT \`account_id\` FROM \`login\` WHERE userid='${USERNAME}';"
             ACCOUNT_ID=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_ACCOUNT_ID_QUERY}");
-            #MYSQL_CHAR_NAME_QUERY="SELECT \`name\` FROM \`char\` WHERE account_id='${ACCOUNT_ID}' AND char_num='${OK_CHAR}';"
-            #CHAR_NAME=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_CHAR_NAME_QUERY}");
+            MYSQL_CHAR_NAME_QUERY="SELECT \`name\` FROM \`char\` WHERE account_id='${ACCOUNT_ID}' AND char_num='${OK_CHAR}';"
+            CHAR_NAME=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_CHAR_NAME_QUERY}");
 
-            #if [ -z "${CHAR_NAME}" ]; then echo "Logged in, but no character found in configured slot."; exit 1; fi
+            if [ -z "${CHAR_NAME}" ]; then echo "Logged in, but no character found in configured slot."; exit 1; fi
 
             MYSQL_QUERY="SELECT \`online\` FROM \`char\` WHERE account_id='${ACCOUNT_ID}' AND char_num='${OK_CHAR}';"
             CHAR_IS_ONLINE=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_QUERY}");
 
             if [ "${CHAR_IS_ONLINE}" = "0" ]; then
                 # Attempt to acquire the lock
-                LOCK_KEY="openkore_account_lock:${OK_IP}:${ACCOUNT_ID}"
+                LOCK_KEY="openkore_account_lock:${OK_IP}:${ACCOUNT_ID}:${CHAR_NAME}"
                 LOCK_ACQUIRED=$(redis-cli -h "${REDIS_HOST}" -a "${REDIS_PASSWORD}" SET "$LOCK_KEY" "$HOSTNAME" NX EX "$LOCK_TIMEOUT")
 
                 if [ "$LOCK_ACQUIRED" = "OK" ]; then
@@ -201,13 +202,14 @@ else
                     break
                 else
                     # Lock not acquired, try the next account
-                    sleep $((10 + RANDOM % 5))
                     echo "Failed to acquire Redis lock for account ${USERNAME} (${ACCOUNT_ID}), lock_key: ${LOCK_KEY}"
                     continue
                 fi
             fi
         done
-        if ! [ "$LOCK_ACQUIRED" = "OK" ]; then echo "Failed to acquire lock on any accounts, restarting search"; fi
+        SLEEP=$((10 + RANDOM % 5.1))
+        if ! [ "$LOCK_ACQUIRED" = "OK" ]; then echo "Failed to acquire lock on any accounts, sleeping for ${SLEEP} then restarting search"; fi
+        sleep $SLEEP
     done
 fi
 sed -i "s|^master$|master ${OK_SERVER}|g" /opt/openkore/control/config.txt
