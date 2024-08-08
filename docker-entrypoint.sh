@@ -88,7 +88,7 @@ else
     while [ "$LOCK_ACQUIRED" != "OK" ]; do
         for i in `seq 0 ${OK_USERNAMEMAXSUFFIX}`;
         do
-            sleep $((RANDOM % 0.5))
+            sleep $((RANDOM % 1.5))
             USERNAME=${OK_USERNAME}${i}
             echo "Querying account ${USERNAME}"
 

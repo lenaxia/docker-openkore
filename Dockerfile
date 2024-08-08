@@ -49,6 +49,7 @@ RUN apt-get update && \
     redis-tools \
     build-essential \ 
     libncurses-dev \ 
+    vim \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy built artifacts from the build stage
