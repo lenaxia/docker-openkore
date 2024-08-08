@@ -412,7 +412,7 @@ userSelf_skill AL_HEAL {
 
 useSelf_skill AL_INCAGI {
        lvl 10
-       #whenStatusInactive Increase AGI
+       whenStatusInactive EFST_INC_AGI
        sp > 10%
        timeout 5
 }
