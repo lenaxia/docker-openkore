@@ -88,7 +88,7 @@ else
     while [ "$LOCK_ACQUIRED" != "OK" ]; do
         for i in `seq 0 ${OK_USERNAMEMAXSUFFIX}`;
         do
-            sleep $((RANDOM % 1.5))
+            sleep $((RANDOM % 2))
             USERNAME=${OK_USERNAME}${i}
             echo "Querying account ${USERNAME}"
 
@@ -207,7 +207,7 @@ else
                 fi
             fi
         done
-        SLEEP=$((10 + RANDOM % 5.1))
+        SLEEP=$((10 + RANDOM % 5))
         if ! [ "$LOCK_ACQUIRED" = "OK" ]; then echo "Failed to acquire lock on any accounts, sleeping for ${SLEEP} then restarting search"; fi
         sleep $SLEEP
     done
