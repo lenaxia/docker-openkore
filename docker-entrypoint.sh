@@ -237,7 +237,7 @@ sed -i "s|^version.*|version ${OK_VERSION}|g" /opt/openkore/tables/servers.txt
 sed -i "s|^charBlockSize.*|charBlockSize ${OK_CHARBLOCKSIZE}|g" /opt/openkore/tables/servers.txt
 sed -i "s|^serverType.*|serverType ${OK_SERVER_TYPE}|g" /opt/openkore/tables/servers.txt
 
-sed -i "s|^bus 0|bus 1|g" /opt/openkore/control/sys.txt
+#sed -i "s|^bus 0|bus 1|g" /opt/openkore/control/sys.txt
 
 if ! [ -z "${OK_FOLLOW_USERNAME1}" ]; then
     printf "Setting follow target to %s\n" "${OK_FOLLOW_USERNAME1}"
