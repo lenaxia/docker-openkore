@@ -70,6 +70,7 @@ COPY config/priest.txt /opt/openkore/control/class/priest.txt
 COPY config/sage.txt /opt/openkore/control/class/sage.txt
 COPY config/swordman.txt /opt/openkore/control/class/swordman.txt
 COPY config/wizard.txt /opt/openkore/control/class/wizard.txt
+COPY plugins/ /opt/openkore/plugins
 
 # Set environment variables for configuration
 ENV OK_IP="" \
