@@ -93,10 +93,10 @@ else
 
             MYSQL_ACCOUNT_ID_QUERY="SELECT \`account_id\` FROM \`login\` WHERE userid='${USERNAME}';"
             ACCOUNT_ID=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_ACCOUNT_ID_QUERY}");
-            MYSQL_CHAR_NAME_QUERY="SELECT \`name\` FROM \`char\` WHERE account_id='${ACCOUNT_ID}' AND char_num='${OK_CHAR}';"
-            CHAR_NAME=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_CHAR_NAME_QUERY}");
+            #MYSQL_CHAR_NAME_QUERY="SELECT \`name\` FROM \`char\` WHERE account_id='${ACCOUNT_ID}' AND char_num='${OK_CHAR}';"
+            #CHAR_NAME=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_CHAR_NAME_QUERY}");
 
-            if [ -z "${CHAR_NAME}" ]; then echo "Logged in, but no character found in configured slot."; exit 1; fi
+            #if [ -z "${CHAR_NAME}" ]; then echo "Logged in, but no character found in configured slot."; exit 1; fi
 
             MYSQL_QUERY="SELECT \`online\` FROM \`char\` WHERE account_id='${ACCOUNT_ID}' AND char_num='${OK_CHAR}';"
             CHAR_IS_ONLINE=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_QUERY}");
@@ -109,8 +109,11 @@ else
                 if [ "$LOCK_ACQUIRED" = "OK" ]; then
                     # Lock acquired, proceed with account selection
                     echo "Redis lock acquired for account ${USERNAME} (${ACCOUNT_ID}), character ${CHAR_NAME}"
-                    MYSQL_QUERY="UPDATE \`char\` SET \`online\`=1 WHERE account_id='${ACCOUNT_ID}' AND char_num='${OK_CHAR}'"
-                    mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_QUERY}"
+
+                    # With Redis no need to mark char online before logging on
+                    #MYSQL_QUERY="UPDATE \`char\` SET \`online\`=1 WHERE account_id='${ACCOUNT_ID}' AND char_num='${OK_CHAR}'"
+                    #mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "${MYSQL_QUERY}"
+
                     CLASS=$(mysql -u${MYSQL_USER} -p${MYSQL_PWD} -h ${MYSQL_HOST} -D ${MYSQL_DB} -ss -e "SELECT class FROM \`char\` WHERE char_num='${OK_CHAR}' AND account_id='${ACCOUNT_ID}';")
 
                     printf "Selected username %s (%s) (%s)\n" "${USERNAME}" "${CHAR_NAME}" "${CLASS}"
