@@ -46,120 +46,119 @@ package wait4party;
         }
 
         sub waitForOthers {
-        return unless ($config{'wait4party'} && @partyUsersID);
-
-        my $actor;
-        foreach (@partyUsersID) {
-                        next if (!$_ || $_ eq $accountID
-                        || ($config{'wait4party_ignore'} && existsInList("$config{'wait4party_ignore'}", "$char->{'party'}{'users'}{$_}{'name'}"))
-                        || ($findParty{ID} && $findParty{ID} ne $_)); # first lost first served
-                        $actor = $playersList->getByID($_);
-
-                        # PARTY MISSING!!
-                        if(!$actor && $char->{'party'}{'users'}{$_}{'online'}) {
-                                # party Check
-                                my %party;
-                                $party{x} = $char->{party}{users}{$_}{pos}{x};
-                                $party{y} = $char->{party}{users}{$_}{pos}{y};
-                                ($party{map}) = $char->{party}{users}{$_}{map} =~ /([\s\S]*)\.gat/;
-
-                                if ($party{map} ne $field->baseName() || !$party{'x'} || !$party{'y'}
-                                || ($party{'x'} == 0) || ($party{'y'} == 0)) {
-                                        next if $config{'wait4party_sameMapOnly'};
-                                        return unless timeOut($timeout{ai}{time},5);
-
-                                        delete $party{x};
-                                        delete $party{y};
-                                }
-
-                                next unless ($party{map} ne $field->baseName || exists $party{x});
-
-                                # set %findParty when party dissappear from screen
-                                if (!$findParty{ID}) {
-                                        $findParty{ID} = $_;
-                                        $findParty{time} = time if !$findParty{time};
-                                        $findParty{timeout} = $config{'wait4party_timeout'} if ($config{'wait4party_timeout'});
-
-                                        if ($config{'wait4party_waitBySitting'}) {
-                                                message ("Party (".$char->{party}{users}{$_}{name}.") lost, wait by sitting.\n", "wait4party");
-                                                } else {
-                                                message ("Party (".$char->{party}{users}{$_}{name}.") lost.\n", "wait4party");
-                                        }
-
-                                }
-
-                                # notAI
-                                return if AI::inQueue(@notAI);
-                                if ($config{'wait4party_waitBySitting'}) {
-                                        emulateCmdSit() if (!$char->{sitting});
-                                        return if (!$findParty{timeout});   # wait by sit forever..
-                                }
-                                return if ($findParty{timeout} && !timeOut(\%findParty));
-
-                                # Search for Party
-                                if ((exists $ai_v{party} && distance(\%party, $ai_v{party}) > $config{followDistanceMax})
-                                || ($party{map} ne $ai_v{party}{map})
-                                || ($ai_v{party}{time} && timeOut($ai_v{party}{time}, 15) && distance(\%party, $char->{pos_to}) > $config{followDistanceMax})) {
-                                        $ai_v{party}{x} = $party{x};
-                                        $ai_v{party}{y} = $party{y};
-                                        $ai_v{party}{map} = $party{map};
-                                        $ai_v{party}{time} = time;
-
-                                        if ($ai_v{party}{map} ne $field->baseName) {
-                                                message TF("Calculating route to find %s: %s\n", $char->{party}{users}{$_}{name}, $ai_v{party}{map}), NAME;
-                                                } elsif (distance(\%party, $char->{pos_to}) > $config{followDistanceMax} ) {
-                                                message TF("Calculating route to find %s: %s (%d %d)\n", $char->{party}{users}{$_}{name}, $ai_v{party}{map}, $ai_v{party}{x}, $ai_v{party}{y}), NAME;
-                                                } else {
-                                                return;
-                                        }
-
-                                        AI::clear("move", "route", "mapRoute");
-                                        AI::ai_route($ai_v{party}{map}, $ai_v{party}{x}, $ai_v{party}{y}, distFromGoal => $config{followDistanceMin}, attackOnRoute => $config{'wait4party_attackOnSearch'});
-                                        return;
-                                }
-
-                # party found
-                } elsif ($findParty{ID} eq $_) {
-                                %findParty = (); ## undef findParty!!
-                                if (!$char->{'party'}{'users'}{$_}{'online'}) {
-                                        message TF("Party member %s is offline\n", $char->{party}{users}{$_}{name}), NAME;
-                                        AI::clear("route");
-                                        return;
-                                }
-                                Commands::cmdStand() if ($char->{sitting} && !$partySit{ID});
-                                message TF("Party member %s found!\n", $char->{party}{users}{$_}{name}), NAME;
-
-                ## party sit?
-                } elsif ($actor && $config{'wait4party_followSit'} && !(AI::inQueue(@notAI)) && AI::action ne "sitAuto") {
-                                # Salah trigger??
-                                if ($actor->{sitting} && !$partySit{ID}) {
-                                        emulateCmdSit() if (!$char->{sitting});
-                                        message TF ("Party member %s sit\n", $actor->{name}), NAME;
-                                        %partySit = ( 'ID' => $actor->{ID}, 'time' => time, 'timeout' => 10 );
-
-                                        } elsif ($partySit{ID} && $actor->{ID} eq $partySit{ID} && timeOut(\%partySit)) {
-                                        if ($actor->{sitting}) {
-                                                emulateCmdSit() if (!$char->{sitting});
-                                                $partySit{'time'} = time;
-                                                $partySit{'timeout'} = 5;
-
-                                                } elsif (!$actor->{sitting}) {
-                                                Commands::cmdStand();
-                                                message TF("Party member %s stand\n", $actor->{name}), NAME;
-                                                %partySit = ();
-                                                return;
-                                        }
-
-                                        if (!$char->{'party'}{'users'}{$_}{'online'}) {
-                                                Commands::cmdStand();
-                                                message TF("Party member %s is offline\n", $actor->{name}), NAME;
-                                                %partySit = ();
-                                                return;
-                                        }
-                                }
+            return unless ($config{'wait4party'} && @partyUsersID);
+        
+            my $actor;
+            foreach (@partyUsersID) {
+                next if (!$_ || $_ eq $accountID
+                    || ($config{'wait4party_ignore'} && existsInList("$config{'wait4party_ignore'}", "$char->{'party'}{'users'}{$_}{'name'}"))
+                    || ($findParty{ID} && $findParty{ID} ne $_)); # first lost first served
+                $actor = $playersList->getByID($_);
+        
+                # PARTY MISSING!!
+                if(!$actor && $char->{'party'}{'users'}{$_}{'online'}) {
+                    # party Check
+                    my %party;
+                    $party{x} = $char->{party}{users}{$_}{pos}{x};
+                    $party{y} = $char->{party}{users}{$_}{pos}{y};
+                    ($party{map}) = $char->{party}{users}{$_}{map} =~ /([\s\S]*)\.gat/;
+        
+                    if ($party{map} ne $field->baseName() || !$party{'x'} || !$party{'y'}
+                        || ($party{'x'} == 0) || ($party{'y'} == 0)) {
+                        next if $config{'wait4party_sameMapOnly'};
+                        return unless timeOut($timeout{ai}{time},5);
+        
+                        delete $party{x};
+                        delete $party{y};
+                    }
+        
+                    next unless ($party{map} ne $field->baseName || exists $party{x});
+        
+                    # set %findParty when party dissappear from screen
+                    if (!$findParty{ID}) {
+                        $findParty{ID} = $_;
+                        $findParty{time} = time if !$findParty{time};
+                        $findParty{timeout} = $config{'wait4party_timeout'} if ($config{'wait4party_timeout'});
+        
+                        if ($config{'wait4party_waitBySitting'}) {
+                            message ("Party (".$char->{party}{users}{$_}{name}.") lost, wait by sitting.\n", "wait4party");
+                        } else {
+                            message ("Party (".$char->{party}{users}{$_}{name}.") lost.\n", "wait4party");
                         }
+                    }
+        
+                    # notAI
+                    return if AI::inQueue(@notAI);
+                    #if ($config{'wait4party_waitBySitting'}) {
+                    #    emulateCmdSit() if (!$char->{sitting});
+                    #    return if (!$findParty{timeout});   # wait by sit forever..
+                    #}
+                    return if ($findParty{timeout} && !timeOut(\%findParty));
+        
+                    # Search for Party
+                    if ((exists $ai_v{party} && distance(\%party, $ai_v{party}) > $config{followDistanceMax})
+                        || ($party{map} ne $ai_v{party}{map})
+                        || ($ai_v{party}{time} && timeOut($ai_v{party}{time}, 15) && distance(\%party, $char->{pos_to}) > $config{followDistanceMax})) {
+                        $ai_v{party}{x} = $party{x};
+                        $ai_v{party}{y} = $party{y};
+                        $ai_v{party}{map} = $party{map};
+                        $ai_v{party}{time} = time;
+        
+                        if ($ai_v{party}{map} ne $field->baseName) {
+                            message TF("Calculating route to find %s: %s\n", $char->{party}{users}{$_}{name}, $ai_v{party}{map}), NAME;
+                        } elsif (distance(\%party, $char->{pos_to}) > $config{followDistanceMax} ) {
+                            message TF("Calculating route to find %s: %s (%d %d)\n", $char->{party}{users}{$_}{name}, $ai_v{party}{map}, $ai_v{party}{x}, $ai_v{party}{y}), NAME;
+                        } else {
+                            return;
+                        }
+        
+                        AI::clear("move", "route", "mapRoute");
+                        AI::ai_route($ai_v{party}{map}, $ai_v{party}{x}, $ai_v{party}{y}, distFromGoal => $config{followDistanceMin}, attackOnRoute => $config{'wait4party_attackOnSearch'});
+                        return;
+                    }
+        
+                    # party found
+                } elsif ($findParty{ID} eq $_) {
+                    %findParty = (); ## undef findParty!!
+                    if (!$char->{'party'}{'users'}{$_}{'online'}) {
+                        message TF("Party member %s is offline\n", $char->{party}{users}{$_}{name}), NAME;
+                        AI::clear("route");
+                        return;
+                    }
+                    Commands::cmdStand() if ($char->{sitting} && !$partySit{ID});
+                    message TF("Party member %s found!\n", $char->{party}{users}{$_}{name}), NAME;
+        
+                # party sit?
+                #} elsif ($actor && $config{'wait4party_followSit'} && !(AI::inQueue(@notAI)) && AI::action ne "sitAuto") {
+                #    # Salah trigger??
+                #    if ($actor->{sitting} && !$partySit{ID}) {
+                #        emulateCmdSit() if (!$char->{sitting});
+                #        message TF ("Party member %s sit\n", $actor->{name}), NAME;
+                #        %partySit = ( 'ID' => $actor->{ID}, 'time' => time, 'timeout' => 10 );
+        
+                #    } elsif ($partySit{ID} && $actor->{ID} eq $partySit{ID} && timeOut(\%partySit)) {
+                #        if ($actor->{sitting}) {
+                #            emulateCmdSit() if (!$char->{sitting});
+                #            $partySit{'time'} = time;
+                #            $partySit{'timeout'} = 5;
+        
+                #        } elsif (!$actor->{sitting}) {
+                #            Commands::cmdStand();
+                #            message TF("Party member %s stand\n", $actor->{name}), NAME;
+                #            %partySit = ();
+                #            return;
+                #        }
+        
+                #        if (!$char->{'party'}{'users'}{$_}{'online'}) {
+                #            Commands::cmdStand();
+                #            message TF("Party member %s is offline\n", $actor->{name}), NAME;
+                #            %partySit = ();
+                #            return;
+                #        }
+                #    }
                 }
-        return;
+            }
+            return;
         }
 
         sub waitCast {

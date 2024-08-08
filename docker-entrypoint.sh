@@ -108,7 +108,7 @@ else
 
                 if [ "$LOCK_ACQUIRED" = "OK" ]; then
                     # Lock acquired, proceed with account selection
-                    echo "Redis lock acquired for account ${USERNAME} (${ACCOUNT_ID}), character ${CHAR_NAME}"
+                    echo "Redis lock acquired for account ${USERNAME} (${ACCOUNT_ID}), character ${CHAR_NAME}, lock_key: ${LOCK_KEY}"
 
                     # With Redis no need to mark char online before logging on
                     #MYSQL_QUERY="UPDATE \`char\` SET \`online\`=1 WHERE account_id='${ACCOUNT_ID}' AND char_num='${OK_CHAR}'"
@@ -201,8 +201,8 @@ else
                     break
                 else
                     # Lock not acquired, try the next account
-                    sleep $((5 + RANDOM % 5))
-                    echo "Failed to acquire Redis lock for account ${USERNAME} (${ACCOUNT_ID})"
+                    sleep $((10 + RANDOM % 5))
+                    echo "Failed to acquire Redis lock for account ${USERNAME} (${ACCOUNT_ID}), lock_key: ${LOCK_KEY}"
                     continue
                 fi
             fi
