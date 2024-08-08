@@ -62,15 +62,7 @@ RUN chown -R openkore:openkore /opt/openkore
 COPY recvpackets.txt /opt/openkore/tables/
 COPY servers.txt /opt/openkore/tables/
 COPY docker-entrypoint.sh /usr/local/bin/
-COPY config/acolyte.txt /opt/openkore/control/class/acolyte.txt
-COPY config/archer.txt /opt/openkore/control/class/archer.txt
-COPY config/knight.txt /opt/openkore/control/class/knight.txt
-COPY config/mage.txt /opt/openkore/control/class/mage.txt
-COPY config/monk.txt /opt/openkore/control/class/monk.txt
-COPY config/priest.txt /opt/openkore/control/class/priest.txt
-COPY config/sage.txt /opt/openkore/control/class/sage.txt
-COPY config/swordman.txt /opt/openkore/control/class/swordman.txt
-COPY config/wizard.txt /opt/openkore/control/class/wizard.txt
+COPY config/ /opt/openkore/control/class/
 COPY plugins/ /opt/openkore/plugins
 
 # Set environment variables for configuration
