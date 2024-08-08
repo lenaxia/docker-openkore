@@ -38,6 +38,7 @@ jobs:
         tags: |
           type=raw,value=${{ steps.get-date.outputs.date }}
           type=sha
+          type=raw,value=latest
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
