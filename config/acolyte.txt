@@ -407,13 +407,13 @@ partySkill AL_CURE {
 
 useSelf_skill AL_HEAL {
         lvl 5 
-        target_hp < 80%
+        hp < 80%
         sp > 10 %
 }
 
 useSelf_skill AL_HEAL {
         lvl 10 
-        target_hp < 40%
+        hp < 40%
         sp > 10 %
 }
 
