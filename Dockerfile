@@ -54,9 +54,6 @@ RUN apt-get update && \
     vim \
     && rm -rf /var/lib/apt/lists/*
 
-# Perl module initialization
-RUN cpan LWP::UserAgent && cpan JSON
-
 # Copy built artifacts from the build stage
 COPY --from=build /opt/openkore /opt/openkore
 
