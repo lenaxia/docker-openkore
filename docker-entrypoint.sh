@@ -41,6 +41,9 @@ if [ -z "${OK_SERVER}" ]; then OK_SERVER="localHost - rA/Herc"; fi
 if [ -z "${OK_CHAR}" ]; then OK_CHAR=0; fi
 if [ -z "${OK_LOCKMAP}" ]; then OK_LOCKMAP="prt_flid07"; fi
 
+if [ -z "${OK_WAIT4PARTY}" ]; then OK_WAIT4PARTY="0"; fi
+if [ -z "${OK_LLM}" ]; then OK_LLM="0"; fi
+
 if [ -z "${OK_ADDTABLEFOLDERS}" ]; then OK_ADDTABLEFOLDERS="kRO/RagexeRE_2020_04_01b;translated/kRO_english"; fi
 if [ -z "${OK_MASTER_VERSION}" ]; then OK_MASTER_VERSION="1"; fi
 if [ -z "${OK_VERSION}" ]; then OK_VERSION="128"; fi
@@ -251,6 +254,17 @@ if ! [ -z "${OK_FOLLOW_USERNAME1}" ]; then
     printf "Setting follow target to %s\n" "${OK_FOLLOW_USERNAME1}"
     sed -i "s|^followTarget.*|followTarget ${OK_FOLLOW_USERNAME1}|g" /opt/openkore/control/config.txt
 fi
+
+# Plugin Enablement
+if [ "${OK_WAIT4PARTY}" = "1" ]; then
+    printf "Enabling wait4party module: %f\n" "${OK_WAIT4PARTY}"
+    sed -i "s|^loadPlugins_list |loadPlugins_list wait4party,|g" /opt/openkore/control/sys.txt
+fi 
+
+if [ "${OK_LLM}" = "1" ]; then
+    printf "Enabling LLM Generative AI module: %f\n" "${OK_LLM}"
+    sed -i "s|^loadPlugins_list |loadPlugins_list openAIChatPlugin,|g" /opt/openkore/control/sys.txt
+fi 
 
 printf "\nOpenKore configuration complete, launching instance\n\n"
 printf "===================================================\n\n"
